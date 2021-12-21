@@ -1,4 +1,4 @@
 package marmara.marmara.model;
 
-public class UDPTransport {
+public class UDPConnection {
 }
