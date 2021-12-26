@@ -35,7 +35,8 @@ public class RegistryConnection extends Thread {
         while (!line.equalsIgnoreCase("LOGOUT")) {
             try {
                 line = serverIn.readUTF();
-                System.out.println(line);
+                System.out.println("Registry >" + line);
+                System.out.print("> ");
                 line = bufferedReader.readLine();
                 out.writeUTF(line);
 
