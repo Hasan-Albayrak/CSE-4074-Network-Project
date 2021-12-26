@@ -2,6 +2,7 @@ package marmara.marmara.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import marmara.marmara.service.ChatWithPeer;
 import marmara.marmara.service.ConnectPeer;
 import marmara.marmara.service.RegistryHandlings;

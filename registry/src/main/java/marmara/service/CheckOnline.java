@@ -1,11 +1,11 @@
 package marmara.service;
 
 import marmara.model.TCPConnection;
-import marmara.model.User;
+import marmara.model.UserHandler;
 
 public interface CheckOnline {
 
-    boolean sendUDPCheck (User user);
+    boolean sendUDPCheck (UserHandler userHandler);
 
-    TCPConnection registerUser(User user);
+    TCPConnection registerUser(UserHandler userHandler);
 }

@@ -21,15 +21,17 @@ public class StartApp {
         String username = reader.readLine();
         System.out.println("Enter your password");
         String password = reader.readLine();
-        System.out.println("Enter your IP address");
-        String ipAddress = reader.readLine();
-        System.out.println("Enter your port number");
-        String port = reader.readLine();
+//        System.out.println("Enter your IP address");
+//        String ipAddress = reader.readLine();
+//        System.out.println("Enter your port number");
+//        String port = reader.readLine();
 
+        RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
         RegistryConnection registryConnection = new RegistryConnection();
 
-        Peer peer = new Peer(username, password, new RegistryHandlingsImpl());
-        peer.connectRegistry(registryConnection);
+       // Peer peer = new Peer(username, password, new RegistryHandlingsImpl());
+        registryHandlings.connectRegistry(registryConnection);
+       // peer.connectRegistry(registryConnection);
 
 
 
