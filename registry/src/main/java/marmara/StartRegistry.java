@@ -1,6 +1,7 @@
 package marmara;
 
 import marmara.model.Registry;
+import marmara.model.TimeOutUser;
 import marmara.service.impl.CheckOnline;
 
 import java.io.IOException;
@@ -17,6 +18,9 @@ public class StartRegistry {
         CheckOnline checkOnline = new CheckOnline(new DatagramSocket(5555), new DatagramPacket(udpMsgByteArr, udpMsgByteArr.length));
         Thread udpListenerThread = new Thread(checkOnline);
         udpListenerThread.start();
+        TimeOutUser timeOutUser = new TimeOutUser();
+        Thread timeOutUserThread = new Thread(timeOutUser);
+        timeOutUserThread.start();
         registry.multiThreadedServer();
 
     }

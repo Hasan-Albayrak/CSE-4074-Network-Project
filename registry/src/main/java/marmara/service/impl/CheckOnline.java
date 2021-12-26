@@ -1,5 +1,8 @@
 package marmara.service.impl;
 
+import marmara.model.Registry;
+import marmara.model.UserHandler;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -32,12 +35,15 @@ public class CheckOnline implements Runnable {
             }
         }
 
-        private void updateStatus(String username){
+
+    }
 
 
+    private void updateStatus(String username) {
+        UserHandler userHandler = Registry.userHandlerMap.get(username);
+        if (userHandler != null && userHandler.isOnline()){
 
         }
-
     }
 }
 

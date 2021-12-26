@@ -1,12 +1,15 @@
 package marmara.model;
 
+import lombok.Data;
 import lombok.SneakyThrows;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicInteger;
 
+@Data
 public class UserHandler implements Runnable {
 
 
@@ -18,6 +21,7 @@ public class UserHandler implements Runnable {
     private boolean isOnline;
     private BufferedReader bufferedReader;
     private User user;
+    private AtomicInteger lastPing;
 
 
     public UserHandler(Socket s, String name, DataInputStream dis, DataOutputStream dos) {
@@ -26,6 +30,7 @@ public class UserHandler implements Runnable {
         this.dis = dis;
         this.dos = dos;
         this.socket = s;
+        lastPing = new AtomicInteger(0);
         bufferedReader = new BufferedReader(new InputStreamReader(System.in));
     }
 
