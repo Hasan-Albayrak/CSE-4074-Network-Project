@@ -19,8 +19,8 @@ public class StartApp {
 
         System.out.println("Enter your username");
         String username = reader.readLine();
-        System.out.println("Enter your password");
-        String password = reader.readLine();
+//        System.out.println("Enter your password");
+//        String password = reader.readLine();
 //        System.out.println("Enter your IP address");
 //        String ipAddress = reader.readLine();
 //        System.out.println("Enter your port number");
@@ -30,7 +30,7 @@ public class StartApp {
         RegistryConnection registryConnection = new RegistryConnection();
 
        // Peer peer = new Peer(username, password, new RegistryHandlingsImpl());
-        registryHandlings.connectRegistry(registryConnection);
+        registryHandlings.connectRegistry(registryConnection, username);
        // peer.connectRegistry(registryConnection);
 
 

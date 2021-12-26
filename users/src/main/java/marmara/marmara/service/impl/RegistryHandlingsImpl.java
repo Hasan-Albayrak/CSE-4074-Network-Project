@@ -25,7 +25,7 @@ public class RegistryHandlingsImpl implements RegistryHandlings {
     }
 
     @Override
-    public void connectRegistry(RegistryConnection registryConnection) {
+    public void connectRegistry(RegistryConnection registryConnection, String username) {
 
         // establish a connection
         try {
@@ -51,10 +51,10 @@ public class RegistryHandlingsImpl implements RegistryHandlings {
             System.out.println(u);
         }
 
-        UDPConnection udpConnection = new UDPConnection();
-        registryConnection.start();
+        UDPConnection udpConnection = new UDPConnection(username);
         Thread t = new Thread(udpConnection);
         t.start();
+        registryConnection.run();
 
     }
 

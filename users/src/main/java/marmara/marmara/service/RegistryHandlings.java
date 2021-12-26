@@ -6,7 +6,7 @@ import marmara.marmara.model.TCPConnection;
 
 public interface RegistryHandlings {
 
-    void connectRegistry(RegistryConnection registryConnection);
+    void connectRegistry(RegistryConnection registryConnection, String username);
 
     String updateStatus(String iAmOnline);
 
