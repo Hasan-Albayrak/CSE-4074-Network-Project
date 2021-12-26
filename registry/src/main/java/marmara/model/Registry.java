@@ -1,6 +1,5 @@
 package marmara.model;
 
-import marmara.service.CheckOnline;
 import marmara.service.PeerFinder;
 
 import java.io.BufferedInputStream;
@@ -12,7 +11,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Registry implements PeerFinder, CheckOnline {
+public class Registry implements PeerFinder {
 
     private static int numberOfUsers = 0;
     public static Map<String, UserHandler> userHandlerMap = new HashMap<>();
