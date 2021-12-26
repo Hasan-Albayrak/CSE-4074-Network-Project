@@ -5,9 +5,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-public class CheckOnline implements Runnable{
-   private final DatagramSocket datagramSocket ;//= new DatagramSocket(5555);
-   private final DatagramPacket datagramPacket;
+public class CheckOnline implements Runnable {
+
+    private final DatagramSocket datagramSocket;
+    private final DatagramPacket datagramPacket;
+
     public CheckOnline(DatagramSocket datagramSocket, DatagramPacket datagramPacket) throws SocketException {
         this.datagramSocket = datagramSocket;
         this.datagramPacket = datagramPacket;
@@ -15,19 +17,25 @@ public class CheckOnline implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("UDP listener listening at port "  + datagramSocket.getPort());
 
-        DatagramPacket receivedPacket = null;
-        String parsedPacket;
-        while (true){
+        System.out.println("UDPListener listening at port " + datagramSocket.getPort());
+
+        String parsedPacket = "";
+        while (true) {
             try {
-                 datagramSocket.receive(receivedPacket);
+                datagramSocket.receive(datagramPacket);
                 System.out.println("Got a package ..!!!");
-                parsedPacket = new String(receivedPacket.getData());
+                parsedPacket = new String(datagramPacket.getData()); // "HELLO <username>"  TODO şeklinde geliyor parslanıp user listesinde aranıcak
                 System.out.println(parsedPacket);
-            }catch (IOException e){
+            } catch (IOException e) {
                 System.err.println(e);
             }
+        }
+
+        private void updateStatus(String username){
+
+
+
         }
 
     }

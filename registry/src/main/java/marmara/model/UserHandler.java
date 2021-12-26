@@ -32,8 +32,8 @@ public class UserHandler implements Runnable {
     private void createAccount() throws IOException {
 
         String promptForUsername = "Enter a username to login " +
-                "(if you do not have an account enter we will create it for you)";
-        String promptForPassword = "Enter your password";
+                "(if you do not have an account enter we will create it for you)" + "#200";
+        String promptForPassword = "Enter your password" + "#200";
         boolean isUsernameValid = false;
 
         String username = "";
@@ -46,25 +46,30 @@ public class UserHandler implements Runnable {
             username = dis.readUTF();
 
             if (Registry.users.containsKey(username)) {
+
                 User user = Registry.users.get(username);
-                dos.writeUTF("Welcome back");
-                dos.writeUTF(promptForPassword);
+                dos.writeUTF("Welcome back \n" + promptForPassword);
+
                 password = dis.readUTF();
                 if (user.getPassword().equals(password)) {
 
-                    dos.writeUTF("Logged in successfully!!");
+                    dos.writeUTF("Logged in successfully!!" + "#200");
                     isUsernameValid = true;
                     this.user = user;
                 } else {
-                    dos.writeUTF("Wrong password!!!");
+                    dos.writeUTF("Wrong password!!!" + "#300");
                 }
             } else {
-                dos.writeUTF("Creating new user. Please enter your password");
+
+                dos.writeUTF("Creating new user. Please enter your password" + "#200");
                 password = dis.readUTF();
-                dos.writeUTF("Enter a port number for others to chat with you");
+
+                dos.writeUTF("Enter a port number for others to chat with you" + "#200");
                 String port = dis.readUTF();
-                dos.writeUTF("Enter a port number for us to check you");
+
+                dos.writeUTF("Enter a port number for us to check you" + "#200");
                 String udpPort = dis.readUTF();
+
                 this.user = User.builder()
                         .username(username)
                         .password(password)
@@ -72,7 +77,8 @@ public class UserHandler implements Runnable {
                         .chatPortNumber(Integer.parseInt(port))
                         .checkOnlinePortNumber(Integer.parseInt(udpPort))
                         .build();
-                dos.writeUTF("Congrats, your account has been created!!!");
+
+                dos.writeUTF("Congrats, your account has been created!!!" + "#300");
 
                 isUsernameValid = true;
 
@@ -92,7 +98,7 @@ public class UserHandler implements Runnable {
         while (true) {
 
             try {
-                dos.writeUTF("Enter your choice");
+                dos.writeUTF("Enter your choice" + "#200");
                 // receive the string
                 received = dis.readUTF();
 

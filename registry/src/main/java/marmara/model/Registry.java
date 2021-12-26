@@ -13,23 +13,14 @@ import java.util.Map;
 
 public class Registry implements PeerFinder {
 
-    private static int numberOfUsers = 0;
     public static Map<String, UserHandler> userHandlerMap = new HashMap<>();
     public static Map<String, User> users = new HashMap<>();
+    private static int numberOfUsers = 0;
     private Socket socket;
     private ServerSocket server;
     private DataInputStream in;
     private ServerSocket multiThreadSocket;
 
-    @Override
-    public boolean sendUDPCheck(UserHandler userHandler) {
-        return false;
-    }
-
-    @Override
-    public TCPConnection registerUser(UserHandler userHandler) {
-        return null;
-    }
 
     public void startServer() {
 
@@ -65,7 +56,7 @@ public class Registry implements PeerFinder {
             socket.close();
             in.close();
         } catch (IOException i) {
-            System.out.println(i);
+            System.err.println(i);
         }
     }
 
@@ -107,7 +98,7 @@ public class Registry implements PeerFinder {
             System.out.println("Adding this client to active client list");
 
             // add this client to active clients list
-            userHandlerMap.put("client " + numberOfUsers ,newUserHandler);
+            userHandlerMap.put("client " + numberOfUsers, newUserHandler);
 
             // start the thread.
             t.start();

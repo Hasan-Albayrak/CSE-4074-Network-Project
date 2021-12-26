@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.StringTokenizer;
 
 
 @Data
@@ -25,20 +26,38 @@ public class RegistryConnection extends Thread {
     @Override
     public void run() {
 
+        System.out.println("If nothing is prompted to you you can write 'ping' to get update from registry");
         bufferedReader = new BufferedReader(input);
         bufferedOutputStream = new BufferedOutputStream(out);
         bufferedServerInputStream = new BufferedInputStream(serverIn);
         // string to read message from input
-        String line = "";
+        String serverInput = null;
+        String serverOutput = null;
+        StringTokenizer st = null;
+        String msg = null;
+        String code = null;
 
         // keep reading until "Over" is input
-        while (!line.equalsIgnoreCase("LOGOUT")) {
+        while (!serverInput.equalsIgnoreCase("LOGOUT")) {
             try {
-                line = serverIn.readUTF();
-                System.out.println("Registry >" + line);
-                System.out.print("> ");
-                line = bufferedReader.readLine();
-                out.writeUTF(line);
+
+                if (serverInput == null || st == null || "200".equals(code)) {
+
+                    serverInput = serverIn.readUTF();
+                    // break the string into message and recipient part
+                    st = new StringTokenizer(serverInput, "#");
+                    msg = st.nextToken();
+                    code = st.nextToken();
+                    System.out.println("Registry >" + serverIn);
+                } else {
+
+                    System.out.print("> ");
+                    serverOutput = bufferedReader.readLine();
+
+                    out.writeUTF(serverOutput);
+                    serverInput = null;
+
+                }
 
             } catch (IOException i) {
                 System.out.println(i);
