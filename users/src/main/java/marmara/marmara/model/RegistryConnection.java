@@ -1,6 +1,8 @@
 package marmara.marmara.model;
 
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
@@ -9,6 +11,7 @@ import java.util.StringTokenizer;
 
 @Data
 public class RegistryConnection extends Thread {
+    private static Logger LOGGER = LoggerFactory.getLogger(RegistryConnection.class);
 
     // initialize socket and input output streams
     private Socket socket;
@@ -31,36 +34,36 @@ public class RegistryConnection extends Thread {
         bufferedOutputStream = new BufferedOutputStream(out);
         bufferedServerInputStream = new BufferedInputStream(serverIn);
         // string to read message from input
-        String serverInput = null;
-        String serverOutput = null;
+        String serverInput;
+        String serverOutput = "null";
         StringTokenizer st = null;
-        String msg = null;
-        String code = null;
+        String msg;
+        String code = "null";
 
-        // keep reading until "Over" is input
-        while (!serverInput.equalsIgnoreCase("LOGOUT")) {
+        // keep reading until "Logout" is input
+        while (!"Logout".equalsIgnoreCase(serverOutput)) {
             try {
-
-                if (serverInput == null || st == null || "200".equals(code)) {
+                if (st == null || "200".equals(code)) {
 
                     serverInput = serverIn.readUTF();
                     // break the string into message and recipient part
                     st = new StringTokenizer(serverInput, "#");
                     msg = st.nextToken();
                     code = st.nextToken();
-                    System.out.println("Registry >" + serverIn);
-                } else {
-
-                    System.out.print("> ");
-                    serverOutput = bufferedReader.readLine();
-
-                    out.writeUTF(serverOutput);
-                    serverInput = null;
-
+                    System.out.println("Registry -> " + msg);
                 }
 
-            } catch (IOException i) {
-                System.out.println(i);
+
+                System.out.print("> ");
+                serverOutput = bufferedReader.readLine();
+
+                out.writeUTF(serverOutput);
+                serverInput = null;
+
+
+            } catch (IOException e) {
+                LOGGER.error("Error in registry connection IO ", e);
+
             }
         }
 
@@ -70,7 +73,7 @@ public class RegistryConnection extends Thread {
             out.close();
             socket.close();
         } catch (IOException i) {
-            System.out.println(i);
+            LOGGER.error("Error in closing data streams in registry connection ", i);
         }
 
     }

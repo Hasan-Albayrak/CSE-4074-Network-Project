@@ -2,6 +2,9 @@ package marmara.model;
 
 import lombok.Data;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
@@ -11,6 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
 public class UserHandler implements Runnable {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(UserHandler.class);
 
 
     private final DataInputStream dis;
@@ -84,6 +89,7 @@ public class UserHandler implements Runnable {
                         .build();
 
                 dos.writeUTF("Congrats, your account has been created!!!" + "#300");
+                LOGGER.info("new user account has been created");
 
                 isUsernameValid = true;
 
@@ -97,7 +103,7 @@ public class UserHandler implements Runnable {
     public void run() {
         createAccount();
 
-        String choicesString = "";
+        String choicesString = "Choic";
 
         String received;
         while (true) {
@@ -123,7 +129,7 @@ public class UserHandler implements Runnable {
 
             } catch (IOException e) {
 
-                e.printStackTrace();
+                LOGGER.error("IO error in Userhandler while talking to user ", e);
             }
 
         }
@@ -133,7 +139,7 @@ public class UserHandler implements Runnable {
             this.dos.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("IO error in closing datastreams in user comms ", e);
         }
     }
 
