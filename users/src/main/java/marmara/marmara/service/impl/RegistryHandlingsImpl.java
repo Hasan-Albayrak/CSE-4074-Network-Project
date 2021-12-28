@@ -1,18 +1,21 @@
 package marmara.marmara.service.impl;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import marmara.marmara.model.RegistryConnection;
 import marmara.marmara.model.UDPConnection;
 import marmara.marmara.service.RegistryHandlings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
-@Builder
+
 @AllArgsConstructor
 public class RegistryHandlingsImpl implements RegistryHandlings {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(RegistryHandlingsImpl.class);
 
     private InputStreamReader inputStreamReader;
     private BufferedReader reader;
@@ -47,8 +50,8 @@ public class RegistryHandlingsImpl implements RegistryHandlings {
 
             // sends output to the socket
             registryConnection.setOut(new DataOutputStream(registryConnection.getSocket().getOutputStream()));
-        } catch (IOException u) {
-            System.out.println(u);
+        } catch (IOException e) {
+            LOGGER.error("Error while connecting registry ", e);
         }
 
         UDPConnection udpConnection = new UDPConnection(username);

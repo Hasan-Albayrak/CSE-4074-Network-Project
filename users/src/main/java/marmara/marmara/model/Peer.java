@@ -10,20 +10,12 @@ import marmara.marmara.service.impl.RegistryHandlingsImpl;
 
 @Data
 @AllArgsConstructor
-public class Peer implements RegistryHandlings, ChatWithPeer, ConnectPeer {
+public class Peer  {
 
     private final String username;
     private final String password;
     private final RegistryHandlingsImpl registryHandlingsImpl;
 
 
-    @Override
-    public void connectRegistry(RegistryConnection registryConnection) {
-        registryHandlingsImpl.connectRegistry(registryConnection);
-    }
 
-    @Override
-    public String updateStatus(String iAmOnline) {
-        return null;
-    }
 }

@@ -1,6 +1,11 @@
 package marmara.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TimeOutUser implements Runnable {
+    private static Logger LOGGER = LoggerFactory.getLogger(TimeOutUser.class);
+
     @Override
     public void run() {
         while (true) {

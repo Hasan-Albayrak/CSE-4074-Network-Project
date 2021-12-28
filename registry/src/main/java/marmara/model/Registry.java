@@ -1,6 +1,8 @@
 package marmara.model;
 
 import marmara.service.PeerFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Registry implements PeerFinder {
+    private static Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
     public static Map<String, UserHandler> userHandlerMap = new HashMap<>();
     public static Map<String, User> users = new HashMap<>();
@@ -64,8 +67,11 @@ public class Registry implements PeerFinder {
     public void multiThreadedServer() throws IOException {
         // server is listening on port 8080
         multiThreadSocket = new ServerSocket(8080);
+        LOGGER.info("Server started. Listening at port {}", multiThreadSocket.getLocalPort());
         System.out.println("Server started. Listening at port 8080");
 
+
+        LOGGER.info("Waiting for client ...");
         System.out.println("Waiting for a client ...");
 
         Socket newRequestSocket = null;
@@ -79,23 +85,26 @@ public class Registry implements PeerFinder {
             try {
                 // Accept the incoming request
                 newRequestSocket = multiThreadSocket.accept();
-                System.out.println("New client request received : " + newRequestSocket);
+                LOGGER.info("New client request received : {}" , newRequestSocket);
+               // System.out.println("New client request received : " + newRequestSocket);
 
                 // obtain input and output streams
                 inputStream = new DataInputStream(newRequestSocket.getInputStream());
                 dos = new DataOutputStream(newRequestSocket.getOutputStream());
 
-                System.out.println("Creating a new handler for this client...");
+                LOGGER.info("Creating a new handler for this client ...");
+                //System.out.println("Creating a new handler for this client...");
 
             } catch (IOException e) {
-                System.err.println(e);
+                LOGGER.error("IO error in newHandler socket", e);
             }
             UserHandler newUserHandler = new UserHandler(newRequestSocket, "client " + numberOfUsers, inputStream, dos);
 
             // Create a new Thread with this object.
             Thread t = new Thread(newUserHandler);
 
-            System.out.println("Adding this client to active client list");
+            LOGGER.info("Adding this client to activate client list");
+           // System.out.println("Adding this client to active client list");
 
             // add this client to active clients list
             userHandlerMap.put("client " + numberOfUsers, newUserHandler);
@@ -104,7 +113,8 @@ public class Registry implements PeerFinder {
             t.start();
             numberOfUsers++;
 
-            System.out.println("Waiting for a client ...");
+            LOGGER.info("Waiting for a client ...");
+            //System.out.println("Waiting for a client ...");
 
         }
     }
