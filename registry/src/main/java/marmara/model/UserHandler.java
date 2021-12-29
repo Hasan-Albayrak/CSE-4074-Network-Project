@@ -103,7 +103,7 @@ public class UserHandler implements Runnable {
     public void run() {
         createAccount();
 
-        String choicesString = "Choic";
+        String choicesString = "Choices";
 
         String received;
         while (true) {
@@ -114,6 +114,7 @@ public class UserHandler implements Runnable {
                 received = dis.readUTF();
 
                 System.out.println(received);
+                LOGGER.info("Received Message from User -> " + user.getUsername() + " -> {}", received);
 
                 if (received.equalsIgnoreCase("logout")) {
                     this.isOnline = false;
