@@ -53,12 +53,17 @@ public class RegistryConnection extends Thread {
                     System.out.println("Registry -> " + msg);
                 }
 
-
                 System.out.print("> ");
                 serverOutput = bufferedReader.readLine();
+                if ("ping".equalsIgnoreCase(serverOutput)){
+                    System.out.println("Pong!!");
+                }
+                else{
 
-                out.writeUTF(serverOutput);
-                serverInput = null;
+                    out.writeUTF(serverOutput);
+                    serverInput = null;
+                }
+
 
 
             } catch (IOException e) {
