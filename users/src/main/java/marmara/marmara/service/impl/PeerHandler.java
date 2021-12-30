@@ -32,8 +32,5 @@ public class PeerHandler {
     private Peer peer;
     private AtomicInteger lastPing;
 
-    public PeerHandler(DataInputStream dis, DataOutputStream dos) {
-        this.dis = dis;
-        this.dos = dos;
-    }
+
 }

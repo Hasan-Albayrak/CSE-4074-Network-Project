@@ -55,30 +55,38 @@ public class UserHandler implements Runnable {
             dos.writeUTF(promptForUsername);
             username = dis.readUTF();
 
+
             if (Registry.users.containsKey(username)) {
 
                 User user = Registry.users.get(username);
                 dos.writeUTF("Welcome back \n" + promptForPassword);
+                dos.flush();
+                dos.size();
 
                 password = dis.readUTF();
                 if (user.getPassword().equals(password)) {
 
                     dos.writeUTF("Logged in successfully!!" + "#200");
+                    dos.flush();
                     isUsernameValid = true;
                     this.user = user;
                 } else {
                     dos.writeUTF("Wrong password!!!" + "#300");
+                    dos.flush();
                 }
             } else {
 
                 dos.writeUTF("Creating new user. Please enter your password" + "#200");
-                password = dis.readUTF();
+                dos.flush();
+                password = new StringTokenizer(dis.readUTF()).nextToken("#");
 
                 dos.writeUTF("Enter a port number for others to chat with you" + "#200");
-                String port = dis.readUTF();
+                dos.flush();
+                String port = new StringTokenizer(dis.readUTF()).nextToken("#");
 
                 dos.writeUTF("Enter a port number for us to check you" + "#200");
-                String udpPort = dis.readUTF();
+                dos.flush();
+                String udpPort = new StringTokenizer(dis.readUTF()).nextToken("#");
 
                 this.user = User.builder()
                         .username(username)
@@ -89,6 +97,7 @@ public class UserHandler implements Runnable {
                         .build();
 
                 dos.writeUTF("Congrats, your account has been created!!!" + "#200");
+                dos.flush();
                 LOGGER.info("new user account has been created => {}", user);
 
                 isUsernameValid = true;
@@ -113,11 +122,14 @@ public class UserHandler implements Runnable {
 
             try {
                 dos.writeUTF(choicesString + "Enter your choice" + "#200");
+                dos.flush();
                 // receive the string
                 received = dis.readUTF();
                 StringTokenizer st = new StringTokenizer(received, "#");
                 String msgPart = st.nextToken();
                 String code = st.nextToken();
+
+                dos.writeUTF("Working#200");
 
                 LOGGER.info("Received Message from User -> {} -> {}", user.getUsername(), received);
 
@@ -135,6 +147,7 @@ public class UserHandler implements Runnable {
                         break;
                     case "INFO":
                         dos.writeUTF(info());
+                        dos.flush();
                         break;
                     default:
 
@@ -167,7 +180,7 @@ public class UserHandler implements Runnable {
 
     private String info() {
 
-        return user.toString() + "#300";
+        return "Your info username -> " + user.getUsername() + " chat port number -> " + user.getChatPortNumber() + "#200";
     }
 
     private void logout() {
