@@ -2,12 +2,12 @@ package marmara.model;
 
 import lombok.Data;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,30 +55,38 @@ public class UserHandler implements Runnable {
             dos.writeUTF(promptForUsername);
             username = dis.readUTF();
 
+
             if (Registry.users.containsKey(username)) {
 
                 User user = Registry.users.get(username);
                 dos.writeUTF("Welcome back \n" + promptForPassword);
+                dos.flush();
+                dos.size();
 
                 password = dis.readUTF();
                 if (user.getPassword().equals(password)) {
 
                     dos.writeUTF("Logged in successfully!!" + "#200");
+                    dos.flush();
                     isUsernameValid = true;
                     this.user = user;
                 } else {
                     dos.writeUTF("Wrong password!!!" + "#300");
+                    dos.flush();
                 }
             } else {
 
                 dos.writeUTF("Creating new user. Please enter your password" + "#200");
-                password = dis.readUTF();
+                dos.flush();
+                password = new StringTokenizer(dis.readUTF()).nextToken("#");
 
                 dos.writeUTF("Enter a port number for others to chat with you" + "#200");
-                String port = dis.readUTF();
+                dos.flush();
+                String port = new StringTokenizer(dis.readUTF()).nextToken("#");
 
                 dos.writeUTF("Enter a port number for us to check you" + "#200");
-                String udpPort = dis.readUTF();
+                dos.flush();
+                String udpPort = new StringTokenizer(dis.readUTF()).nextToken("#");
 
                 this.user = User.builder()
                         .username(username)
@@ -88,8 +96,9 @@ public class UserHandler implements Runnable {
                         .checkOnlinePortNumber(Integer.parseInt(udpPort))
                         .build();
 
-                dos.writeUTF("Congrats, your account has been created!!!" + "#300");
-                LOGGER.info("new user account has been created");
+                dos.writeUTF("Congrats, your account has been created!!!" + "#200");
+                dos.flush();
+                LOGGER.info("new user account has been created => {}", user);
 
                 isUsernameValid = true;
 
@@ -103,29 +112,48 @@ public class UserHandler implements Runnable {
     public void run() {
         createAccount();
 
-        String choicesString = "Choices";
+        String choicesString = "Use 'Search  <username>' to search for other users.\n" +
+                "               Use 'Info' to get your account details\n" +
+                "               User 'Logout' to exit system\n";
+
 
         String received;
         while (true) {
 
             try {
-                dos.writeUTF("Enter your choice" + "#200");
+                dos.writeUTF(choicesString + "Enter your choice" + "#200");
+                dos.flush();
                 // receive the string
                 received = dis.readUTF();
+                StringTokenizer st = new StringTokenizer(received, "#");
+                String msgPart = st.nextToken();
+                String code = st.nextToken();
 
-                System.out.println(received);
-                LOGGER.info("Received Message from User -> " + user.getUsername() + " -> {}", received);
+                dos.writeUTF("Working#200");
 
-                if (received.equalsIgnoreCase("logout")) {
+                LOGGER.info("Received Message from User -> {} -> {}", user.getUsername(), received);
+
+                if (msgPart.equalsIgnoreCase("logout")) {
                     this.isOnline = false;
                     this.socket.close();
                     break;
                 }
+                switch (msgPart.toUpperCase()) {
+                    case "SEARCH":
+                        dos.writeUTF(search(msgPart));
+                        break;
+                    case "LOGOUT":
+                        logout();
+                        break;
+                    case "INFO":
+                        dos.writeUTF(info());
+                        dos.flush();
+                        break;
+                    default:
+
+                }
 
                 // break the string into message and recipient part
-                StringTokenizer st = new StringTokenizer(received, "#");
-                String MsgToSend = st.nextToken();
-                String recipient = st.nextToken();
 
 
             } catch (IOException e) {
@@ -142,6 +170,21 @@ public class UserHandler implements Runnable {
         } catch (IOException e) {
             LOGGER.error("IO error in closing datastreams in user comms ", e);
         }
+    }
+
+    private String search(String msg) {
+        String userName = Arrays.stream(msg.split(" ")).filter(s -> !"Search".equalsIgnoreCase(s)).toString();
+        return (Registry.users.get(userName).getChatPortNumber() + "#300");
+
+    }
+
+    private String info() {
+
+        return "Your info username -> " + user.getUsername() + " chat port number -> " + user.getChatPortNumber() + "#200";
+    }
+
+    private void logout() {
+
     }
 
 }
