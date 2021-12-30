@@ -167,7 +167,7 @@ public class UserHandler implements Runnable {
 
     private String info() {
 
-        return user.toString();
+        return user.toString() + "#300";
     }
 
     private void logout() {

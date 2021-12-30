@@ -25,54 +25,54 @@ public class Registry implements PeerFinder {
     private ServerSocket multiThreadSocket;
 
 
-    public void startServer() {
-
-        // starts server and waits for a connection
-        try {
-            server = new ServerSocket(1234);
-            System.out.println("Server started");
-
-            System.out.println("Waiting for a client ...");
-
-            socket = server.accept();
-            System.out.println("Client accepted");
-
-            // takes input from the client socket
-            in = new DataInputStream(
-                    new BufferedInputStream(socket.getInputStream()));
-
-            String line = "";
-
-            // reads message from client until "Over" is sent
-            while (!line.equals("LOGOUT")) {
-                try {
-                    line = in.readUTF();
-                    System.out.println(line);
-
-                } catch (IOException i) {
-                    System.out.println(i);
-                }
-            }
-            System.out.println("Closing connection");
-
-            // close connection
-            socket.close();
-            in.close();
-        } catch (IOException i) {
-            System.err.println(i);
-        }
-    }
+//    public void startServer() {
+//
+//        // starts server and waits for a connection
+//        try {
+//            server = new ServerSocket(1234);
+//            System.out.println("Server started");
+//
+//            System.out.println("Waiting for a client ...");
+//
+//            socket = server.accept();
+//            System.out.println("Client accepted");
+//
+//            // takes input from the client socket
+//            in = new DataInputStream(
+//                    new BufferedInputStream(socket.getInputStream()));
+//
+//            String line = "";
+//
+//            // reads message from client until "Over" is sent
+//            while (!line.equals("LOGOUT")) {
+//                try {
+//                    line = in.readUTF();
+//                    System.out.println(line);
+//
+//                } catch (IOException i) {
+//                    System.out.println(i);
+//                }
+//            }
+//            System.out.println("Closing connection");
+//
+//            // close connection
+//            socket.close();
+//            in.close();
+//        } catch (IOException i) {
+//            System.err.println(i);
+//        }
+//    }
 
 
     public void multiThreadedServer() throws IOException {
         // server is listening on port 8080
         multiThreadSocket = new ServerSocket(8080);
         LOGGER.info("Server started. Listening at port {}", multiThreadSocket.getLocalPort());
-        System.out.println("Server started. Listening at port 8080");
+
 
 
         LOGGER.info("Waiting for client ...");
-        System.out.println("Waiting for a client ...");
+
 
         Socket newRequestSocket = null;
 
@@ -86,14 +86,12 @@ public class Registry implements PeerFinder {
                 // Accept the incoming request
                 newRequestSocket = multiThreadSocket.accept();
                 LOGGER.info("New client request received : {}" , newRequestSocket);
-               // System.out.println("New client request received : " + newRequestSocket);
 
                 // obtain input and output streams
                 inputStream = new DataInputStream(newRequestSocket.getInputStream());
                 dos = new DataOutputStream(newRequestSocket.getOutputStream());
 
                 LOGGER.info("Creating a new handler for this client ...");
-                //System.out.println("Creating a new handler for this client...");
 
             } catch (IOException e) {
                 LOGGER.error("IO error in newHandler socket", e);
@@ -104,7 +102,6 @@ public class Registry implements PeerFinder {
             Thread t = new Thread(newUserHandler);
 
             LOGGER.info("Adding this client to activate client list");
-           // System.out.println("Adding this client to active client list");
 
             // add this client to active clients list
             userHandlerMap.put("client " + numberOfUsers, newUserHandler);
@@ -114,7 +111,6 @@ public class Registry implements PeerFinder {
             numberOfUsers++;
 
             LOGGER.info("Waiting for a client ...");
-            //System.out.println("Waiting for a client ...");
 
         }
     }
