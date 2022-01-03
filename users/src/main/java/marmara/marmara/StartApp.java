@@ -16,10 +16,10 @@ public class StartApp {
     public static ClientThread clientThread;
 
     public static void main(String[] args) throws IOException {
-        serverThread = new ServerThread();
-        serverThread.stopThread();
-        clientThread = new ClientThread();
-        clientThread.stopThread();
+//        serverThread = new ServerThread();
+//        serverThread.stopThread();
+//        clientThread = new ClientThread(peerHandler);
+//        clientThread.stopThread();
 
         Thread tServer = new Thread(serverThread);
         tServer.start();

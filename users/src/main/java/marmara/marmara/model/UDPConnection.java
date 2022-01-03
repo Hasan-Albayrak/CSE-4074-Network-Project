@@ -16,7 +16,7 @@ public class UDPConnection implements Runnable {
     public UDPConnection(String username) {
         try {
             datagramSocket = new DatagramSocket();
-            String udpMsg = "HELLO" + " " + username;
+            String udpMsg = "HELLO" + "#" + username + "#";
             byte[] byteHello = udpMsg.getBytes();
             helloPacket = new DatagramPacket(byteHello, byteHello.length, InetAddress.getLocalHost(), 5555);
         } catch (UnknownHostException | SocketException e) {
@@ -30,7 +30,6 @@ public class UDPConnection implements Runnable {
 
         while (true) {
             try {
-
                 Thread.sleep(60000);
                 datagramSocket.send(helloPacket);
             } catch (InterruptedException | IOException e) {

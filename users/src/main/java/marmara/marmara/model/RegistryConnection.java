@@ -94,7 +94,6 @@ public class RegistryConnection extends Thread {
             while (!"Logout".equalsIgnoreCase(serverOutput[0])) {
                 try {
                     if (true) {
-
                         serverInput[0] = serverIn.readUTF();
                         // break the string into message and recipient part
                         st[0] = new StringTokenizer(serverInput[0], "#");
@@ -114,14 +113,10 @@ public class RegistryConnection extends Thread {
                         out.flush();
                         serverInput[0] = null;
                     }
-
-
                 } catch (IOException e) {
                     LOGGER.error("Error in registry connection IO ", e);
-
                 }
             }
-
             // close the connection
             try {
                 input.close();
