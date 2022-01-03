@@ -73,6 +73,7 @@ public class ClientThread implements Runnable {
         }
         LOGGER.info("Closing client thread {} logged out", peerHandler.getName());
         System.out.println(peerHandler.getName() + " logged out");
+        RegistryConnection.isChatting = false;
     }
 }
 

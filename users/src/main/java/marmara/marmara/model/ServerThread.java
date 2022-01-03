@@ -70,7 +70,7 @@ public class ServerThread implements Runnable {
         }
         LOGGER.info("Closing server thread");
         System.out.println("Closing server thread ...");
-
+        RegistryConnection.isChatting = false;
     }
 
 }
