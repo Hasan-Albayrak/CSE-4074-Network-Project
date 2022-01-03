@@ -1,5 +1,6 @@
 package marmara.marmara.service.impl;
 
+import marmara.marmara.StartApp;
 import marmara.marmara.model.ClientThread;
 import marmara.marmara.model.Peer;
 import marmara.marmara.model.ServerThread;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -22,6 +24,12 @@ public class ConnectPeerImpl implements ConnectPeer {
         this.myScheduler = myScheduler;
     }
 
+    public void initiate(){
+        Scanner myScanner = new Scanner(System.in);
+        System.out.println("Enter peer portNumber and userName like portNumber-userName");
+
+    }
+
 
     public void connect(String ipAddresss, int portNumber, ServerSocket chatTCPSocket, String userName) {
 
@@ -33,16 +41,26 @@ public class ConnectPeerImpl implements ConnectPeer {
 
         try {
             newRequestSocket = chatTCPSocket.accept();
+            Socket socket = new Socket(InetAddress.getLocalHost(), portNumber);
 
-            inputStream = new DataInputStream(newRequestSocket.getInputStream());
-            dos = new DataOutputStream(newRequestSocket.getOutputStream());
 
-            PeerHandler newPeerHandler = PeerHandler.builder().peer(peerToConnect).dis(inputStream).dos(dos).scn(new Scanner(System.in)).socket(newRequestSocket).build();
-            PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
-            ClientThread clientThread = new ClientThread(newPeerHandler);
-            ServerThread serverThread = new ServerThread();
-            myScheduler.execute(clientThread);
-            myScheduler.execute(serverThread);
+
+            inputStream = new DataInputStream(socket.getInputStream());
+            dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(StartApp.name + "#");
+            String yesOrNo = inputStream.readUTF();
+            if ("accept".equalsIgnoreCase(yesOrNo)){
+
+
+                PeerHandler newPeerHandler = PeerHandler.builder().peer(peerToConnect).dis(inputStream).dos(dos).scn(new Scanner(System.in)).socket(newRequestSocket).build();
+                PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
+                ClientThread clientThread = new ClientThread(newPeerHandler);
+                ServerThread serverThread = new ServerThread();
+                myScheduler.execute(clientThread);
+                myScheduler.execute(serverThread);
+            }else {
+                System.out.println("Peer refused connection");
+            }
 
 
         } catch (Exception e) {

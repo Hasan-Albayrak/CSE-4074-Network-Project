@@ -14,7 +14,9 @@ public class ClientThread implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientThread.class);
 
 
-    private boolean workFlag;
+    public static boolean peerLoggedOut;
+
+    private boolean  workFlag;
 
     public ClientThread(PeerHandler peerHandler) {
         this.peerHandler = peerHandler;
@@ -29,7 +31,8 @@ public class ClientThread implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        peerLoggedOut = false;
+        while (!peerLoggedOut) {
             if (true) {
 
                 try {
@@ -38,6 +41,11 @@ public class ClientThread implements Runnable {
                     StringTokenizer st = new StringTokenizer(msg, "#");
                     String msgToRead = st.nextToken();
                     String peerName = st.nextToken();
+                    if ("logout".equalsIgnoreCase(msgToRead)){
+                        peerHandler.getDis().close();
+                        ServerThread.peerLoggedOut = true;
+                        break;
+                    }
                     System.out.println(peerName + " > " + msgToRead);
 
                 } catch (IOException e) {
@@ -63,6 +71,8 @@ public class ClientThread implements Runnable {
 //                });
             }
         }
+        LOGGER.info("Closing client thread {} logged out", peerHandler.getName());
+        System.out.println(peerHandler.getName() + " logged out");
     }
 }
 

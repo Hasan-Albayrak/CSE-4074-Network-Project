@@ -15,6 +15,7 @@ public class ServerThread implements Runnable {
     private static Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
     private BufferedReader reader;
     private boolean workFlag;
+    public static boolean  peerLoggedOut;
 
     public void stopThread() {
         workFlag = false;
@@ -27,13 +28,29 @@ public class ServerThread implements Runnable {
     @Override
     public void run() {
         reader = new BufferedReader(new InputStreamReader(System.in));
+        peerLoggedOut = false;
 
-        while (true) {
+        while (!peerLoggedOut) {
             if (workFlag) {
                 try {
                     // read the message to deliver.
                     System.out.println(" > ");
                     String msg = reader.readLine();
+                    if ("logout".equalsIgnoreCase(msg)){
+                        PeerHandler.peerHandlerMap.forEach((s, peerHandler) -> {
+                            if (Objects.nonNull(s) && Objects.nonNull(peerHandler)) {
+                                try {
+                                    peerHandler.getDos().writeUTF("logout#400");
+                                    peerHandler.getDos().close();
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        ClientThread.peerLoggedOut = true;
+                        break;
+                    }
                     msg += "#" + StartApp.name;
                     String finalMsg = msg;
 
@@ -51,6 +68,9 @@ public class ServerThread implements Runnable {
                 }
             }
         }
+        LOGGER.info("Closing server thread");
+        System.out.println("Closing server thread ...");
+
     }
 
 }
