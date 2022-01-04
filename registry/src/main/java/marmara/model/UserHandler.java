@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,28 +47,27 @@ public class UserHandler implements Runnable {
 
         String username = "";
         String password = "";
-
+        User connectingUser;
+        StringTokenizer st;
 
         while (!isUsernameValid) {
 
             dos.writeUTF(promptForUsername);
             username = new StringTokenizer(dis.readUTF()).nextToken("#");
 
-
             if (Registry.users.containsKey(username)) {
-
-                User user = Registry.users.get(username);
+                connectingUser = Registry.users.get(username);
                 dos.writeUTF("Welcome back \n" + promptForPassword);
                 dos.flush();
-                dos.size();
 
-                password = dis.readUTF();
-                if (user.getPassword().equals(password)) {
+                st = new StringTokenizer(dis.readUTF(), "#");
+                password = st.nextToken();
+                if (connectingUser.getPassword().equals(password)) {
 
                     dos.writeUTF("Logged in successfully!!" + "#200");
                     dos.flush();
                     isUsernameValid = true;
-                    this.user = user;
+                    this.user = connectingUser;
                 } else {
                     dos.writeUTF("Wrong password!!!" + "#300");
                     dos.flush();
@@ -78,15 +76,19 @@ public class UserHandler implements Runnable {
 
                 dos.writeUTF("Creating new user. Please enter your password" + "#200");
                 dos.flush();
-                password = new StringTokenizer(dis.readUTF()).nextToken("#");
+                st = new StringTokenizer(dis.readUTF(), "#");
+                password = st.nextToken();
 
                 dos.writeUTF("Enter a port number for others to chat with you" + "#200");
                 dos.flush();
-                String port = new StringTokenizer(dis.readUTF()).nextToken("#");
+
+                st = new StringTokenizer(dis.readUTF(), "#");
+                String port = st.nextToken();
 
                 dos.writeUTF("Enter a port number for us to check you" + "#200");
                 dos.flush();
-                String udpPort = new StringTokenizer(dis.readUTF()).nextToken("#");
+                st = new StringTokenizer(dis.readUTF(), "#");
+                String udpPort = st.nextToken();
 
                 this.user = User.builder()
                         .username(username)
@@ -100,6 +102,7 @@ public class UserHandler implements Runnable {
                 dos.flush();
                 LOGGER.info("new user account has been created => {}", user);
                 Registry.users.put(this.user.getUsername(),this.user);
+                this.isOnline = true;
 
                 isUsernameValid = true;
 
@@ -119,7 +122,7 @@ public class UserHandler implements Runnable {
 
 
         String received;
-        while (true) {
+        while (this.isOnline) {
 
             try {
                 dos.writeUTF(choicesString + "Enter your choice" + "#200");
@@ -130,13 +133,12 @@ public class UserHandler implements Runnable {
                 String msgPart = st.nextToken();
                 String code = st.nextToken();
 
-                dos.writeUTF("Working#200");
-
                 LOGGER.info("Received Message from User -> {} -> {}", user.getUsername(), received);
 
                 if (msgPart.equalsIgnoreCase("logout")) {
                     this.isOnline = false;
-                    this.socket.close();
+                    dos.writeUTF("logout");
+                  //  this.socket.close();
                     break;
                 }
                 switch (msgPart.split(" ")[0].toUpperCase()) {
@@ -167,6 +169,7 @@ public class UserHandler implements Runnable {
             // closing resources
             this.dis.close();
             this.dos.close();
+            this.socket.close();
 
         } catch (IOException e) {
             LOGGER.error("IO error in closing datastreams in user comms ", e);
@@ -192,6 +195,7 @@ public class UserHandler implements Runnable {
     }
 
     private void logout() {
+
 
     }
 
