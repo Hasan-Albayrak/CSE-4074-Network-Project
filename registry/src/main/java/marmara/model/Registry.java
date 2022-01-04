@@ -4,7 +4,6 @@ import marmara.service.PeerFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -24,55 +23,12 @@ public class Registry implements PeerFinder {
     private DataInputStream in;
     private ServerSocket multiThreadSocket;
 
-
-//    public void startServer() {
-//
-//        // starts server and waits for a connection
-//        try {
-//            server = new ServerSocket(1234);
-//            System.out.println("Server started");
-//
-//            System.out.println("Waiting for a client ...");
-//
-//            socket = server.accept();
-//            System.out.println("Client accepted");
-//
-//            // takes input from the client socket
-//            in = new DataInputStream(
-//                    new BufferedInputStream(socket.getInputStream()));
-//
-//            String line = "";
-//
-//            // reads message from client until "Over" is sent
-//            while (!line.equals("LOGOUT")) {
-//                try {
-//                    line = in.readUTF();
-//                    System.out.println(line);
-//
-//                } catch (IOException i) {
-//                    System.out.println(i);
-//                }
-//            }
-//            System.out.println("Closing connection");
-//
-//            // close connection
-//            socket.close();
-//            in.close();
-//        } catch (IOException i) {
-//            System.err.println(i);
-//        }
-//    }
-
-
     public void multiThreadedServer() throws IOException {
         // server is listening on port 8080
         multiThreadSocket = new ServerSocket(8080);
         LOGGER.info("Server started. Listening at port {}", multiThreadSocket.getLocalPort());
 
-
-
         LOGGER.info("Waiting for client ...");
-
 
         Socket newRequestSocket = null;
 

@@ -1,6 +1,6 @@
-package marmara.marmara.model;
+package marmara.app.model;
 
-import marmara.marmara.StartApp;
+import marmara.app.StartApp;
 
 public class ThreadsUtil {
     private ServerThread serverThread = StartApp.serverThread;

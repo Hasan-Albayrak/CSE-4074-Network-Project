@@ -1,8 +1,8 @@
-package marmara.marmara.service.impl;
+package marmara.app.service.impl;
 
 import lombok.Builder;
 import lombok.Data;
-import marmara.marmara.model.Peer;
+import marmara.app.model.Peer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.StringTokenizer;
 
 public class CheckOnline implements Runnable {
     private static Logger LOGGER = LoggerFactory.getLogger(CheckOnline.class);
@@ -25,30 +26,32 @@ public class CheckOnline implements Runnable {
     @Override
     public void run() {
 
-        LOGGER.info("UDPListener listening at port " + datagramSocket.getLocalPort());
-//        System.out.println("UDPListener listening at port " + datagramSocket.getPort());
+        LOGGER.info("UDPListener listening at port {}", datagramSocket.getLocalPort());
 
         String parsedPacket = "";
         while (true) {
             try {
                 datagramSocket.receive(datagramPacket);
                 LOGGER.info("Got a package ..!!!");
-                parsedPacket = new String(datagramPacket.getData()); // "HELLO <username>"  TODO şeklinde geliyor parslanıp user listesinde aranıcak
-                System.out.println(parsedPacket);
+                parsedPacket = new String(datagramPacket.getData());
+                StringTokenizer st = new StringTokenizer(parsedPacket, "#");
+                String msg = st.nextToken();
+                String userName = st.nextToken();
+                updateStatus(userName);
+                // System.out.println(parsedPacket);
                 LOGGER.info("Parsed packet => {}", parsedPacket);
+                LOGGER.info("Parsed message => {} {}", msg, userName);
+
             } catch (IOException e) {
                 LOGGER.error("Error while receiving udp packages ", e);
             }
         }
-
-
     }
 
-
-    private void updateStatus(String username) {
-        UserHandler userHandler = Registry.userHandlerMap.get(username);
-        if (userHandler != null && userHandler.isOnline()){
-
+    private void updateStatus(String userName) {
+        UserHandler userHandler = Registry.userHandlerMap.get(userName);
+        if (userHandler != null && userHandler.isOnline()) {
+            userHandler.getLastPing().set(0);
         }
     }
 }

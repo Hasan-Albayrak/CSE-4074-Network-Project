@@ -1,6 +1,6 @@
-package marmara.marmara.service.impl;
+package marmara.app.service.impl;
 
-import marmara.marmara.service.ChatWithPeer;
+import marmara.app.service.ChatWithPeer;
 
 public class ChatWithPeerImpl implements ChatWithPeer {
 
