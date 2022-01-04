@@ -66,7 +66,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>marmara.marmara.StartApp</mainClass>
+                            <mainClass>marmara.app.StartApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
