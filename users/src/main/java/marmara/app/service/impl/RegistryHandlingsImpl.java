@@ -28,7 +28,7 @@ public class RegistryHandlingsImpl implements RegistryHandlings {
     }
 
     @Override
-    public void connectRegistry(RegistryConnection registryConnection, String username) {
+    public void connectRegistry(RegistryConnection registryConnection, String username, boolean isFirstTime) {
 
         // establish a connection
         try {
@@ -43,8 +43,6 @@ public class RegistryHandlingsImpl implements RegistryHandlings {
             registryConnection.setInput(new InputStreamReader(System.in));
 
             // takes input from socket
-            // bufferedInputStream = new BufferedInputStream(registryConnection.getSocket().getInputStream());
-
             registryConnection.setServerIn(new DataInputStream(registryConnection.getSocket().getInputStream()));
 
 
@@ -54,10 +52,13 @@ public class RegistryHandlingsImpl implements RegistryHandlings {
             LOGGER.error("Error while connecting registry ", e);
         }
 
-        UDPConnection udpConnection = new UDPConnection(username);
-        Thread t = new Thread(udpConnection);
-        t.start();
-        registryConnection.run();
+        if (isFirstTime){
+
+            UDPConnection udpConnection = new UDPConnection(username);
+            Thread t = new Thread(udpConnection);
+            t.start();
+        }
+        registryConnection.start();
 
     }
 

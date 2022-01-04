@@ -53,29 +53,33 @@ public class RegistryConnection extends Thread {
                 @Override
                 public void run() {
                     while (true) {
-                        while (!isChatting){
+                        while (!isChatting && socket != null && !socket.isClosed()){
 
                             try {
-                                System.out.println("User 'connect-peer' command to connect peer");
-                                System.out.print("> ");
+                              //  System.out.println("User 'connect-peer' command to connect peer");
 
                                 serverOutput[0] = bufferedReader.readLine();
                                 if("connect-peer".equalsIgnoreCase(serverOutput[0])){
                                     isChatting = true;
+                                    out.writeUTF("logout#400");
+                                    out.flush();
+                                    out.close();
                                     connectPeer.initiate();
                                     break;
                                 }
 //                                else if ("ping".equalsIgnoreCase(serverOutput[0])) {
 //                                    System.out.println("Pong!!");
 //                                }
-                                else if (!isChatting){
+                                else if (!isChatting && socket != null){
                                     out.writeUTF(serverOutput[0] + "#100");
+                                    out.flush();
                                     serverInput[0] = null;
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
+                        break;
                     }
                 }
             });
@@ -87,69 +91,32 @@ public class RegistryConnection extends Thread {
 
                     //TODO daha güzel text ui
                     while (true){
-
-                        while (!isChatting) {
+                        while (!isChatting && !socket.isClosed() ) {
                             try {
                                 serverInput[0] = serverIn.readUTF();
+                                if ("logout".equalsIgnoreCase(serverInput[0])){
+                                    serverIn.close();
+                                    socket.close();
+                                    bufferedReader.close();
+                                    break;
+                                }
                                 // break the string into message and recipient part
                                 st[0] = new StringTokenizer(serverInput[0], "#");
                                 msg[0] = st[0].nextToken();
                                 code[0] = st[0].nextToken();
-                                System.out.println("Registry -> " + msg[0]);
                                 LOGGER.info("Got a message from registry => {}", serverInput[0]);
+                                System.out.println("Registry -> " + msg[0]);
+                                System.out.print("> ");
                             } catch (IOException e) {
-
-//                            // close the connection
-//                            try {
-//                                input.close();
-//                                out.close();
-//                                socket.close();
-//                            } catch (IOException i) {
-//                                LOGGER.error("Error in closing data streams in registry connection ", i);
-//                            }
-
-                                e.printStackTrace();
+                                LOGGER.error("Error in reading from registry socket", e);
                             }
                         }
+                        break;
                     }
                 }
             });
-
             sendMessage.start();
             readMessage.start();
-//        } else {
-//
-//            while (!"Logout".equalsIgnoreCase(serverOutput[0])) {
-//                try {
-//                    if (true) {
-//                        serverInput[0] = serverIn.readUTF();
-//                        // break the string into message and recipient part
-//                        st[0] = new StringTokenizer(serverInput[0], "#");
-//                        msg[0] = st[0].nextToken();
-//                        code[0] = st[0].nextToken();
-//                        System.out.println("Registry -> " + msg[0]);
-//                        LOGGER.info("Got a message from registry => {}", msg[0]);
-//                    }
-//                    System.out.print("> ");
-//                    serverOutput[0] = bufferedReader.readLine();
-//                    if ("ping".equalsIgnoreCase(serverOutput[0])) {
-//                        System.out.println("Pong!!");
-//                    } else {
-//                       final String toSend = serverOutput[0] + "#100";
-//
-//                        out.writeUTF(toSend);
-//                        out.flush();
-//                        serverInput[0] = null;
-//                    }
-//                } catch (IOException e) {
-//                    LOGGER.error("Error in registry connection IO ", e);
-//                }
-//            }
-//
-//
-//        }
-
-
         }
     }
 }

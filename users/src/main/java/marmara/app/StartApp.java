@@ -44,7 +44,7 @@ public class StartApp {
         tHandler.start();
 
 
-        registryHandlings.connectRegistry(registryConnection, name);
+        registryHandlings.connectRegistry(registryConnection, name, true);
 
 
     }
