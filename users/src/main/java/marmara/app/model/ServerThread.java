@@ -34,10 +34,12 @@ public class ServerThread implements Runnable {
         while (!peerLoggedOut) {
             if (workFlag) {
                 try {
+                    if (peerLoggedOut) {
+                        break;
+                    }
                     // read the message to deliver.
-                    System.out.print(" > ");
                     String msg = reader.readLine();
-                    if ("logout".equalsIgnoreCase(msg) && !peerLoggedOut){//TODO Havaya giden inputlar var userin girdiği nereye gittiğne bakılcak hemen registry gitmiyor gibi gözüküyor
+                    if ("logout".equalsIgnoreCase(msg) && !peerLoggedOut) {//TODO Havaya giden inputlar var userin girdiği nereye gittiğne bakılcak hemen registry gitmiyor gibi gözüküyor
                         PeerHandler.peerHandlerMap.forEach((s, peerHandler) -> {
                             if (Objects.nonNull(s) && Objects.nonNull(peerHandler)) {
                                 try {
@@ -51,19 +53,25 @@ public class ServerThread implements Runnable {
                         });
                         ClientThread.peerLoggedOut = true;
                         break;
-                    }
-                    msg += "#" + StartApp.name;
-                    String finalMsg = msg;
+                    } else {
 
-                    PeerHandler.peerHandlerMap.forEach((s, peerHandler) -> {
-                        if (Objects.nonNull(s) && Objects.nonNull(peerHandler)) {
-                            try {
-                                peerHandler.getDos().writeUTF(finalMsg);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                        msg += "#" + StartApp.name;
+                        String finalMsg = msg;
+
+                        if (!peerLoggedOut){
+                            PeerHandler.peerHandlerMap.forEach((s, peerHandler) -> {
+                            if (Objects.nonNull(s) && Objects.nonNull(peerHandler)) {
+                                try {
+                                    peerHandler.getDos().writeUTF(finalMsg);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
+                            });
+                        }else {
+                            break;
                         }
-                    });
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
