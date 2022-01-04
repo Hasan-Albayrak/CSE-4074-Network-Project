@@ -37,7 +37,7 @@ public class ServerThread implements Runnable {
                     // read the message to deliver.
                     System.out.print(" > ");
                     String msg = reader.readLine();
-                    if ("logout".equalsIgnoreCase(msg) && !peerLoggedOut){
+                    if ("logout".equalsIgnoreCase(msg) && !peerLoggedOut){//TODO Havaya giden inputlar var userin girdiği nereye gittiğne bakılcak hemen registry gitmiyor gibi gözüküyor
                         PeerHandler.peerHandlerMap.forEach((s, peerHandler) -> {
                             if (Objects.nonNull(s) && Objects.nonNull(peerHandler)) {
                                 try {
@@ -72,6 +72,7 @@ public class ServerThread implements Runnable {
         LOGGER.info("Closing server thread");
         System.out.println("Closing server thread ...");
         RegistryConnection.isChatting = false;
+        // TODO registry connection en başta kapatılıp daha sonra tekrar açılabilir
     }
 
 }

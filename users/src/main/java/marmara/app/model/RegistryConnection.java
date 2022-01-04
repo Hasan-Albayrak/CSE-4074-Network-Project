@@ -85,6 +85,7 @@ public class RegistryConnection extends Thread {
                 @Override
                 public void run() {
 
+                    //TODO daha güzel text ui
                     while (true){
 
                         while (!isChatting) {
