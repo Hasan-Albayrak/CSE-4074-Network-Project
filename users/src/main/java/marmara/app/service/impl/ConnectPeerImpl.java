@@ -1,10 +1,11 @@
-package marmara.marmara.service.impl;
+package marmara.app.service.impl;
 
-import marmara.marmara.StartApp;
-import marmara.marmara.model.ClientThread;
-import marmara.marmara.model.Peer;
-import marmara.marmara.model.ServerThread;
-import marmara.marmara.service.ConnectPeer;
+import marmara.app.StartApp;
+import marmara.app.model.ClientThread;
+import marmara.app.model.Peer;
+import marmara.app.model.RegistryConnection;
+import marmara.app.model.ServerThread;
+import marmara.app.service.ConnectPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class ConnectPeerImpl implements ConnectPeer {
 
@@ -26,7 +28,10 @@ public class ConnectPeerImpl implements ConnectPeer {
 
     public void initiate(){
         Scanner myScanner = new Scanner(System.in);
-        System.out.println("Enter peer portNumber and userName like portNumber-userName");
+         System.out.println("Enter peer portNumber and userName like portNumber-userName");
+        String portNumberUsername = myScanner.nextLine();
+        StringTokenizer st = new StringTokenizer(portNumberUsername, "-");
+        connect("local", Integer.parseInt(st.nextToken()), null, st.nextToken());
 
     }
 
@@ -40,9 +45,9 @@ public class ConnectPeerImpl implements ConnectPeer {
         Peer peerToConnect = Peer.builder().username(userName).portNumber(String.valueOf(portNumber)).build();
 
         try {
-            newRequestSocket = chatTCPSocket.accept();
+            //newRequestSocket = chatTCPSocket.accept();
             Socket socket = new Socket(InetAddress.getLocalHost(), portNumber);
-
+            System.out.println("Connected peer ...");
 
 
             inputStream = new DataInputStream(socket.getInputStream());
@@ -51,14 +56,14 @@ public class ConnectPeerImpl implements ConnectPeer {
             String yesOrNo = inputStream.readUTF();
             if ("accept".equalsIgnoreCase(yesOrNo)){
 
-
-                PeerHandler newPeerHandler = PeerHandler.builder().peer(peerToConnect).dis(inputStream).dos(dos).scn(new Scanner(System.in)).socket(newRequestSocket).build();
+                PeerHandler newPeerHandler = PeerHandler.builder().peer(peerToConnect).dis(inputStream).dos(dos).scn(new Scanner(System.in)).socket(socket).name(userName).build();
                 PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
                 ClientThread clientThread = new ClientThread(newPeerHandler);
                 ServerThread serverThread = new ServerThread();
                 myScheduler.execute(clientThread);
                 myScheduler.execute(serverThread);
             }else {
+                RegistryConnection.isChatting = false;
                 System.out.println("Peer refused connection");
             }
 

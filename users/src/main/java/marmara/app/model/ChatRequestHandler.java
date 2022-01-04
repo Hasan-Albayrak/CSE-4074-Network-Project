@@ -1,6 +1,7 @@
-package marmara.marmara.model;
+package marmara.app.model;
 
-import marmara.marmara.service.impl.PeerHandler;
+import marmara.app.StartApp;
+import marmara.app.service.impl.PeerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,8 @@ public class ChatRequestHandler implements Runnable {
     private DataInputStream in;
     private ServerSocket multiThreadSocket;
 
+
+
     @Override
     public void run() {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -26,11 +29,11 @@ public class ChatRequestHandler implements Runnable {
         isChatting = false;
         // server is listening on port 8080
         try {
-            multiThreadSocket = new ServerSocket(8080);
+            multiThreadSocket = new ServerSocket(StartApp.portNumber);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        LOGGER.info("Server started. Listening at port {}", multiThreadSocket.getLocalPort());
+        LOGGER.info("Your Server started. Listening at port {}", multiThreadSocket.getLocalPort());
 
         LOGGER.info("Waiting for peer ...");
 

@@ -1,7 +1,8 @@
-package marmara.marmara.model;
+package marmara.app.model;
 
 import lombok.Data;
-import marmara.marmara.service.impl.ConnectPeerImpl;
+import marmara.app.service.impl.ConnectPeerImpl;
+import marmara.app.service.impl.CustomThreadScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class RegistryConnection extends Thread {
     @Override
     public void run() {
 
+        connectPeer = new ConnectPeerImpl(new CustomThreadScheduler(5));
         System.out.println("If nothing is prompted to you you can write 'ping' to get update from registry");
         bufferedReader = new BufferedReader(input);
         bufferedOutputStream = new BufferedOutputStream(out);
@@ -51,23 +53,28 @@ public class RegistryConnection extends Thread {
                 @Override
                 public void run() {
                     while (true) {
+                        while (!isChatting){
 
-                        try {
-                            System.out.print("> ");
+                            try {
+                                System.out.println("User 'connect-peer' command to connect peer");
+                                System.out.print("> ");
 
-                            serverOutput[0] = bufferedReader.readLine();
-                            if("connect-peer".equalsIgnoreCase(serverOutput[0])){
-                                connectPeer.initiate();
+                                serverOutput[0] = bufferedReader.readLine();
+                                if("connect-peer".equalsIgnoreCase(serverOutput[0])){
+                                    isChatting = true;
+                                    connectPeer.initiate();
+                                    break;
+                                }
+//                                else if ("ping".equalsIgnoreCase(serverOutput[0])) {
+//                                    System.out.println("Pong!!");
+//                                }
+                                else if (!isChatting){
+                                    out.writeUTF(serverOutput[0] + "#100");
+                                    serverInput[0] = null;
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                            if ("ping".equalsIgnoreCase(serverOutput[0])) {
-                                System.out.println("Pong!!");
-                            } else {
-
-                                out.writeUTF(serverOutput[0] + "#100");
-                                serverInput[0] = null;
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
                     }
                 }
@@ -78,16 +85,18 @@ public class RegistryConnection extends Thread {
                 @Override
                 public void run() {
 
-                    while (true) {
-                        try {
-                            serverInput[0] = serverIn.readUTF();
-                            // break the string into message and recipient part
-                            st[0] = new StringTokenizer(serverInput[0], "#");
-                            msg[0] = st[0].nextToken();
-                            code[0] = st[0].nextToken();
-                            System.out.println("Registry -> " + msg[0]);
-                            LOGGER.info("Got a message from registry => {}", serverInput[0]);
-                        } catch (IOException e) {
+                    while (true){
+
+                        while (!isChatting) {
+                            try {
+                                serverInput[0] = serverIn.readUTF();
+                                // break the string into message and recipient part
+                                st[0] = new StringTokenizer(serverInput[0], "#");
+                                msg[0] = st[0].nextToken();
+                                code[0] = st[0].nextToken();
+                                System.out.println("Registry -> " + msg[0]);
+                                LOGGER.info("Got a message from registry => {}", serverInput[0]);
+                            } catch (IOException e) {
 
 //                            // close the connection
 //                            try {
@@ -98,7 +107,8 @@ public class RegistryConnection extends Thread {
 //                                LOGGER.error("Error in closing data streams in registry connection ", i);
 //                            }
 
-                            e.printStackTrace();
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }

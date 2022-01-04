@@ -1,8 +1,6 @@
-package marmara.marmara.service;
+package marmara.app.service;
 
-import marmara.marmara.model.ChatPeer;
-import marmara.marmara.model.RegistryConnection;
-import marmara.marmara.model.TCPConnection;
+import marmara.app.model.RegistryConnection;
 
 public interface RegistryHandlings {
 

@@ -1,4 +1,4 @@
-package marmara.marmara.service;
+package marmara.app.service;
 
 public interface ConnectPeer {
 }

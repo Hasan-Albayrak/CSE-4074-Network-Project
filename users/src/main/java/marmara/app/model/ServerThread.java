@@ -1,7 +1,7 @@
-package marmara.marmara.model;
+package marmara.app.model;
 
-import marmara.marmara.StartApp;
-import marmara.marmara.service.impl.PeerHandler;
+import marmara.app.StartApp;
+import marmara.app.service.impl.PeerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,15 +28,16 @@ public class ServerThread implements Runnable {
     @Override
     public void run() {
         reader = new BufferedReader(new InputStreamReader(System.in));
+        workFlag = true;
         peerLoggedOut = false;
 
         while (!peerLoggedOut) {
             if (workFlag) {
                 try {
                     // read the message to deliver.
-                    System.out.println(" > ");
+                    System.out.print(" > ");
                     String msg = reader.readLine();
-                    if ("logout".equalsIgnoreCase(msg)){
+                    if ("logout".equalsIgnoreCase(msg) && !peerLoggedOut){
                         PeerHandler.peerHandlerMap.forEach((s, peerHandler) -> {
                             if (Objects.nonNull(s) && Objects.nonNull(peerHandler)) {
                                 try {

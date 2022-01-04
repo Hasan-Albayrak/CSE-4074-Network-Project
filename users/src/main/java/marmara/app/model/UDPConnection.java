@@ -1,4 +1,4 @@
-package marmara.marmara.model;
+package marmara.app.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package marmara.marmara.service.impl;
+package marmara.app.service.impl;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 

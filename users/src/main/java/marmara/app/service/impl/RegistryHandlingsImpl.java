@@ -1,9 +1,9 @@
-package marmara.marmara.service.impl;
+package marmara.app.service.impl;
 
 import lombok.AllArgsConstructor;
-import marmara.marmara.model.RegistryConnection;
-import marmara.marmara.model.UDPConnection;
-import marmara.marmara.service.RegistryHandlings;
+import marmara.app.model.RegistryConnection;
+import marmara.app.model.UDPConnection;
+import marmara.app.service.RegistryHandlings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

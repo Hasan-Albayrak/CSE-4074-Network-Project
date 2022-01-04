@@ -1,11 +1,10 @@
-package marmara.marmara.model;
+package marmara.app.model;
 
-import marmara.marmara.service.impl.PeerHandler;
+import marmara.app.service.impl.PeerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.StringTokenizer;
 
 public class ClientThread implements Runnable {
@@ -32,6 +31,7 @@ public class ClientThread implements Runnable {
     @Override
     public void run() {
         peerLoggedOut = false;
+        workFlag = true;
         while (!peerLoggedOut) {
             if (true) {
 

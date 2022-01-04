@@ -1,4 +1,4 @@
-package marmara.marmara.model;
+package marmara.app.model;
 
 public class TCPConnection {
 

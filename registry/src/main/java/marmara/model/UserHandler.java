@@ -53,7 +53,7 @@ public class UserHandler implements Runnable {
         while (!isUsernameValid) {
 
             dos.writeUTF(promptForUsername);
-            username = dis.readUTF();
+            username = new StringTokenizer(dis.readUTF()).nextToken("#");
 
 
             if (Registry.users.containsKey(username)) {
@@ -99,6 +99,7 @@ public class UserHandler implements Runnable {
                 dos.writeUTF("Congrats, your account has been created!!!" + "#200");
                 dos.flush();
                 LOGGER.info("new user account has been created => {}", user);
+                Registry.users.put(this.user.getUsername(),this.user);
 
                 isUsernameValid = true;
 
@@ -112,9 +113,9 @@ public class UserHandler implements Runnable {
     public void run() {
         createAccount();
 
-        String choicesString = "Use 'Search  <username>' to search for other users.\n" +
-                "               Use 'Info' to get your account details\n" +
-                "               User 'Logout' to exit system\n";
+        String choicesString = "Use '-Search  <username>' to search for other users.\n" +
+                "               Use '-Info' to get your account details\n" +
+                "               User '-Logout' to exit system\n";
 
 
         String received;
@@ -138,14 +139,14 @@ public class UserHandler implements Runnable {
                     this.socket.close();
                     break;
                 }
-                switch (msgPart.toUpperCase()) {
-                    case "SEARCH":
+                switch (msgPart.split(" ")[0].toUpperCase()) {
+                    case "-SEARCH":
                         dos.writeUTF(search(msgPart));
                         break;
-                    case "LOGOUT":
+                    case "-LOGOUT":
                         logout();
                         break;
-                    case "INFO":
+                    case "-INFO":
                         dos.writeUTF(info());
                         dos.flush();
                         break;
@@ -173,8 +174,15 @@ public class UserHandler implements Runnable {
     }
 
     private String search(String msg) {
-        String userName = Arrays.stream(msg.split(" ")).filter(s -> !"Search".equalsIgnoreCase(s)).toString();
-        return (Registry.users.get(userName).getChatPortNumber() + "#300");
+       // String userName = Arrays.stream(msg.split(" ")).filter(s -> !"Search".equalsIgnoreCase(s)).toString();
+        String userName = msg.split(" ")[1];
+        if (Registry.users.containsKey(userName)){
+
+            return (Registry.users.get(userName).getChatPortNumber() + "#300");
+        }
+        else {
+            return "Could not found user#400";
+        }
 
     }
 
