@@ -1,5 +1,6 @@
 package marmara.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -12,9 +13,10 @@ import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
+
 public class UserHandler implements Runnable {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(UserHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserHandler.class);
 
 
     private final DataInputStream dis;
@@ -68,6 +70,7 @@ public class UserHandler implements Runnable {
                     dos.flush();
                     isUsernameValid = true;
                     this.user = connectingUser;
+                    this.isOnline = true;
                 } else {
                     dos.writeUTF("Wrong password!!!" + "#300");
                     dos.flush();
@@ -84,11 +87,6 @@ public class UserHandler implements Runnable {
 
                 st = new StringTokenizer(dis.readUTF(), "#");
                 String port = st.nextToken();
-
-//                dos.writeUTF("Enter a port number for us to check you" + "#200");
-//                dos.flush();
-//                st = new StringTokenizer(dis.readUTF(), "#");
-//                String udpPort = st.nextToken();
                 String udpPort = "8888";
 
                 this.user = User.builder()
@@ -109,7 +107,6 @@ public class UserHandler implements Runnable {
 
             }
         }
-
     }
 
     @SneakyThrows
@@ -157,12 +154,9 @@ public class UserHandler implements Runnable {
 
                 }
 
-                // break the string into message and recipient part
-
-
             } catch (IOException e) {
 
-                LOGGER.error("IO error in Userhandler while talking to user {} {}", e, this.user);
+                LOGGER.error("IO error in UserHandler while talking to user {} {}", e, this.user);
             }
 
         }
@@ -170,15 +164,22 @@ public class UserHandler implements Runnable {
             // closing resources
             this.dis.close();
             this.dos.close();
-           // this.socket.close();
+            // this.socket.close();
+            LOGGER.info("Removing UserHandler => {}", this);
+            if (Registry.userHandlerMap.remove(this.name, this)) {
+                LOGGER.info("Removed UserHandler => {}", this);
+
+            } else {
+                LOGGER.error("Could not remove userHandler {}", this);
+            }
+
 
         } catch (IOException e) {
-            LOGGER.error("IO error in closing datastreams in user comms ", e);
+            LOGGER.error("IO error in closing dataStreams in user comms ", e);
         }
     }
 
     private String search(String msg) {
-       // String userName = Arrays.stream(msg.split(" ")).filter(s -> !"Search".equalsIgnoreCase(s)).toString();
         String userName = msg.split(" ")[1];
         if (Registry.users.containsKey(userName)){
 

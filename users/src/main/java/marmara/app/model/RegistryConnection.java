@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 
 @Data
 public class RegistryConnection extends Thread {
-    private static Logger LOGGER = LoggerFactory.getLogger(RegistryConnection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryConnection.class);
 
     // initialize socket and input output streams
     public static boolean isChatting = false;
@@ -64,7 +64,6 @@ public class RegistryConnection extends Thread {
                                     isChatting = true;
                                     out.writeUTF("logout#400");
                                     out.flush();
-                                    //bufferedReader.close();
                                     connectPeer.initiate();
                                     break;
                                 }
@@ -72,12 +71,10 @@ public class RegistryConnection extends Thread {
                                     isChatting = true;
                                     out.writeUTF("logout#400");
                                     out.flush();
+                                    System.out.print(" > ");
 
                                     break;
                                 }
-//                                else if ("ping".equalsIgnoreCase(serverOutput[0])) {
-//                                    System.out.println("Pong!!");
-//                                }
                                 else if (!isChatting && socket != null) {
                                     out.writeUTF(serverOutput[0] + "#100");
                                     out.flush();
@@ -104,12 +101,7 @@ public class RegistryConnection extends Thread {
                                 serverInput[0] = serverIn.readUTF(); //TODO handle after connecting peer
                                 LOGGER.info("Got a message from registry => {}", serverInput[0]);
                                 if ("logout".equalsIgnoreCase(serverInput[0])){
-                                    serverIn.close();
-                                    out.close();
                                     socket.close();
-                                    out.close();
-                                    //bufferedReader.close();//TODO burda kapatma threadler yüzünde system.in kapanıyor.
-
                                     break;
                                 }
                                 // break the string into message and recipient part

@@ -18,23 +18,16 @@ public class StartApp {
     public static int portNumber;
 
     public static void main(String[] args) throws IOException {
-//        serverThread = new ServerThread();
-//        serverThread.stopThread();
-//        clientThread = new ClientThread(peerHandler);
-//        clientThread.stopThread();
-
-//        Thread tServer = new Thread(serverThread);
-//        tServer.start();
-//        Thread tClient = new Thread(clientThread);
-//        tClient.start();
 
         InputStreamReader inputStreamReader = new InputStreamReader(System.in);
 
         BufferedReader reader = new BufferedReader(inputStreamReader);
 
         System.out.println("Enter your username");
+        System.out.print(" > ");
         name = reader.readLine();
         System.out.println("Enter your port number");
+        System.out.print(" > ");
         portNumber = Integer.parseInt(reader.readLine());
 
         RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
