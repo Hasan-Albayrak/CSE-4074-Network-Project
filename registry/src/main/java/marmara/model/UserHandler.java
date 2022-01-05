@@ -85,10 +85,11 @@ public class UserHandler implements Runnable {
                 st = new StringTokenizer(dis.readUTF(), "#");
                 String port = st.nextToken();
 
-                dos.writeUTF("Enter a port number for us to check you" + "#200");
-                dos.flush();
-                st = new StringTokenizer(dis.readUTF(), "#");
-                String udpPort = st.nextToken();
+//                dos.writeUTF("Enter a port number for us to check you" + "#200");
+//                dos.flush();
+//                st = new StringTokenizer(dis.readUTF(), "#");
+//                String udpPort = st.nextToken();
+                String udpPort = "8888";
 
                 this.user = User.builder()
                         .username(username)
@@ -161,7 +162,7 @@ public class UserHandler implements Runnable {
 
             } catch (IOException e) {
 
-                LOGGER.error("IO error in Userhandler while talking to user ", e);
+                LOGGER.error("IO error in Userhandler while talking to user {} {}", e, this.user);
             }
 
         }
@@ -169,7 +170,7 @@ public class UserHandler implements Runnable {
             // closing resources
             this.dis.close();
             this.dos.close();
-            this.socket.close();
+           // this.socket.close();
 
         } catch (IOException e) {
             LOGGER.error("IO error in closing datastreams in user comms ", e);

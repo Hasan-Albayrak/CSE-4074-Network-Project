@@ -9,8 +9,10 @@ import marmara.app.service.ConnectPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,10 +28,25 @@ public class ConnectPeerImpl implements ConnectPeer {
         this.myScheduler = myScheduler;
     }
 
-    public void initiate(){
-        Scanner myScanner = new Scanner(System.in);
-         System.out.println("Enter peer portNumber and userName like portNumber-userName");
-        String portNumberUsername = myScanner.nextLine();
+    public void initiate() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter peer portNumber and userName like portNumber-userName");
+
+        try {
+            while (reader.ready()) {
+                reader = new BufferedReader(new InputStreamReader(System.in));
+            }
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+        String portNumberUsername = null;
+        try {
+
+            portNumberUsername = reader.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         StringTokenizer st = new StringTokenizer(portNumberUsername, "-");
         connect("local", Integer.parseInt(st.nextToken()), null, st.nextToken());
 

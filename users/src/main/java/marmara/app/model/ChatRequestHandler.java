@@ -56,13 +56,14 @@ public class ChatRequestHandler implements Runnable {
                 dos = new DataOutputStream(newRequestSocket.getOutputStream());
                 RegistryConnection.isChatting = true;
                 String userName = inputStream.readUTF();
+                System.out.println("Enter 'accept-peer' to handle connection request\n > ");
                 System.out.println(userName + "wants to chat yes or no?");
                 String yerOrNo = bufferedReader.readLine();
                 if ("yes".equalsIgnoreCase(yerOrNo)) {
                     dos.writeUTF("ACCEPT");
                     LOGGER.info("Creating a new handler for this peer ...");
                     Peer newPeer = Peer.builder().username(userName).build();
-                    PeerHandler newPeerHandler = PeerHandler.builder().peer(newPeer).dis(inputStream).dos(dos).scn(new Scanner(System.in)).name(userName).build();
+                    PeerHandler newPeerHandler = PeerHandler.builder().peer(newPeer).dis(inputStream).dos(dos).scn(new Scanner(System.in)).name(userName).socket(newRequestSocket).build();
                     PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
                     ClientThread clientThread = new ClientThread(newPeerHandler);
                     ServerThread serverThread = new ServerThread();
