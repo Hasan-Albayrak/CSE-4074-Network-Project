@@ -3,7 +3,6 @@ package marmara.app.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import marmara.app.service.impl.PeerHandler;
 
 @Data
 @AllArgsConstructor

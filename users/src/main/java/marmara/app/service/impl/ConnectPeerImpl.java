@@ -1,11 +1,9 @@
 package marmara.app.service.impl;
 
 import marmara.app.StartApp;
-import marmara.app.model.ClientThread;
-import marmara.app.model.Peer;
-import marmara.app.model.RegistryConnection;
-import marmara.app.model.ServerThread;
+import marmara.app.model.*;
 import marmara.app.service.ConnectPeer;
+import marmara.app.service.RegistryHandlings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +19,7 @@ import java.util.StringTokenizer;
 
 public class ConnectPeerImpl implements ConnectPeer {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ConnectPeerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectPeerImpl.class);
     private final CustomThreadScheduler myScheduler;
 
     public ConnectPeerImpl(CustomThreadScheduler myScheduler) {
@@ -30,7 +28,7 @@ public class ConnectPeerImpl implements ConnectPeer {
 
     public void initiate() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Enter peer portNumber and userName like portNumber-userName");
+        System.out.println("Enter peer portNumber and userName like portNumber-userName\n > ");
 
         try {
             while (reader.ready()) {
@@ -45,7 +43,7 @@ public class ConnectPeerImpl implements ConnectPeer {
 
             portNumberUsername = reader.readLine();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error in reading peer port number and name ", e);
         }
         StringTokenizer st = new StringTokenizer(portNumberUsername, "-");
         connect("local", Integer.parseInt(st.nextToken()), null, st.nextToken());
@@ -60,20 +58,26 @@ public class ConnectPeerImpl implements ConnectPeer {
         DataInputStream inputStream = null;
         DataOutputStream dos = null;
         Peer peerToConnect = Peer.builder().username(userName).portNumber(String.valueOf(portNumber)).build();
+        Socket socket = null;
 
         try {
-            //newRequestSocket = chatTCPSocket.accept();
-            Socket socket = new Socket(InetAddress.getLocalHost(), portNumber);
-            System.out.println("Connected peer ...");
+            socket = new Socket(InetAddress.getLocalHost(), portNumber);
+            System.out.println("Connected peer, Awaiting response ...");
 
 
             inputStream = new DataInputStream(socket.getInputStream());
             dos = new DataOutputStream(socket.getOutputStream());
             dos.writeUTF(StartApp.name + "#");
             String yesOrNo = inputStream.readUTF();
-            if ("accept".equalsIgnoreCase(yesOrNo)){
-
-                PeerHandler newPeerHandler = PeerHandler.builder().peer(peerToConnect).dis(inputStream).dos(dos).scn(new Scanner(System.in)).socket(socket).name(userName).build();
+            if ("accept".equalsIgnoreCase(yesOrNo)) {
+                PeerHandler newPeerHandler = PeerHandler.builder()
+                        .peer(peerToConnect)
+                        .dis(inputStream)
+                        .dos(dos)
+                        .scn(new Scanner(System.in))
+                        .socket(socket)
+                        .name(userName)
+                        .build();
                 PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
                 ClientThread clientThread = new ClientThread(newPeerHandler);
                 ServerThread serverThread = new ServerThread();
@@ -82,12 +86,17 @@ public class ConnectPeerImpl implements ConnectPeer {
             }else {
                 RegistryConnection.isChatting = false;
                 System.out.println("Peer refused connection");
+                LOGGER.info("Peer refused connection");
+                RegistryConnection registryConnection = new RegistryConnection();
+                RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
+                registryHandlings.connectRegistry(registryConnection, StartApp.name, false);
             }
 
 
         } catch (Exception e) {
             LOGGER.error("Error in initiating peer connection", e);
         }
+
 
     }
 }

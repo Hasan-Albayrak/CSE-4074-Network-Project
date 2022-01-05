@@ -2,7 +2,6 @@ package marmara.app.model;
 
 import marmara.app.StartApp;
 import marmara.app.service.RegistryHandlings;
-import marmara.app.service.impl.PeerHandler;
 import marmara.app.service.impl.RegistryHandlingsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,16 +47,10 @@ public class ClientThread implements Runnable {
                     if ("logout".equalsIgnoreCase(msgToRead)) {
                         System.out.println("Peer logged out enter 'logout-safe' to safely logout.");
                         System.out.print(" > ");
-                        // peerHandler.getDis().close();
-                        //peerHandler.getSocket().shutdownInput();
-
                         isLast = false;
                         break;
                     }
                     if ("logout-safe".equalsIgnoreCase(msgToRead)) {
-                        // System.out.println();
-                        // peerHandler.getSocket().shutdownInput();
-
                         isLast = true;
                         break;
                     }
