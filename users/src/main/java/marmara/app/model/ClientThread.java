@@ -2,7 +2,6 @@ package marmara.app.model;
 
 import marmara.app.StartApp;
 import marmara.app.service.RegistryHandlings;
-import marmara.app.service.impl.PeerHandler;
 import marmara.app.service.impl.RegistryHandlingsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,7 @@ public class ClientThread implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientThread.class);
 
 
+    private boolean isLast;
     public static boolean peerLoggedOut;
 
     private boolean  workFlag;
@@ -35,27 +35,29 @@ public class ClientThread implements Runnable {
     public void run() {
         peerLoggedOut = false;
         workFlag = true;
-        while (!peerLoggedOut) {
-            if (true) {
+        while (true) {
 
-                try {
-                    if (!peerLoggedOut){
-
-                        String msg = peerHandler.getDis().readUTF();
-                        LOGGER.info("Got a message from a peer => {}", msg);
-                        StringTokenizer st = new StringTokenizer(msg, "#");
-                        String msgToRead = st.nextToken();
-                        String peerName = st.nextToken();
-                        if ("logout".equalsIgnoreCase(msgToRead)){
-                            peerLoggedOut = true;
-                            peerHandler.getDis().close();
-                            ServerThread.peerLoggedOut = true;
-                            break;
-                        }
-                        System.out.println(peerName + " > " + msgToRead);
-                        System.out.print(" >");
-
+            try {
+                if (!peerHandler.getSocket().isClosed()) {
+                    String msg = peerHandler.getDis().readUTF();
+                    LOGGER.info("Got a message from a peer => {}", msg);
+                    StringTokenizer st = new StringTokenizer(msg, "#");
+                    String msgToRead = st.nextToken();
+                    String peerName = st.nextToken();
+                    if ("logout".equalsIgnoreCase(msgToRead)) {
+                        System.out.println("Peer logged out enter 'logout-safe' to safely logout.");
+                        System.out.print(" > ");
+                        isLast = false;
+                        break;
                     }
+                    if ("logout-safe".equalsIgnoreCase(msgToRead)) {
+                        isLast = true;
+                        break;
+                    }
+                    System.out.println(peerName + " > " + msgToRead);
+                    System.out.print(" > ");
+
+                }
                 } catch (IOException e) {
                     LOGGER.error("Error while reading message from a peer => ", e);
                 }
@@ -77,14 +79,26 @@ public class ClientThread implements Runnable {
 //                        }
 //                    }
 //                });
-            }
+
         }
+
         LOGGER.info("Closing client thread {} logged out", peerHandler.getName());
-        System.out.println(peerHandler.getName() + " logged out");
         RegistryConnection.isChatting = false;
-        RegistryConnection registryConnection = new RegistryConnection();
-        RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
-        registryHandlings.connectRegistry(registryConnection, StartApp.name, false);
+        if (isLast) {
+            try {
+                peerHandler.getDis().close();
+                peerHandler.getSocket().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            RegistryConnection registryConnection = new RegistryConnection();
+            RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
+            registryHandlings.connectRegistry(registryConnection, StartApp.name, false);
+        } else {
+            System.out.println(peerHandler.getName() + " logged out");
+
+        }
     }
 }
 

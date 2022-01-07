@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 
 @Data
 public class RegistryConnection extends Thread {
-    private static Logger LOGGER = LoggerFactory.getLogger(RegistryConnection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryConnection.class);
 
     // initialize socket and input output streams
     public static boolean isChatting = false;
@@ -35,6 +35,7 @@ public class RegistryConnection extends Thread {
     public void run() {
 
         connectPeer = new ConnectPeerImpl(new CustomThreadScheduler(5));
+        input = new InputStreamReader(System.in);
         System.out.println("If nothing is prompted to you you can write 'ping' to get update from registry");
         bufferedReader = new BufferedReader(input);
         bufferedOutputStream = new BufferedOutputStream(out);
@@ -59,18 +60,22 @@ public class RegistryConnection extends Thread {
                               //  System.out.println("User 'connect-peer' command to connect peer");
 
                                 serverOutput[0] = bufferedReader.readLine();
-                                if("connect-peer".equalsIgnoreCase(serverOutput[0])){
+                                if ("connect-peer".equalsIgnoreCase(serverOutput[0])) {
                                     isChatting = true;
                                     out.writeUTF("logout#400");
                                     out.flush();
-                                    out.close();
                                     connectPeer.initiate();
                                     break;
                                 }
-//                                else if ("ping".equalsIgnoreCase(serverOutput[0])) {
-//                                    System.out.println("Pong!!");
-//                                }
-                                else if (!isChatting && socket != null){
+                                else if ("accept-peer".equalsIgnoreCase(serverOutput[0])) {
+                                    isChatting = true;
+                                    out.writeUTF("logout#400");
+                                    out.flush();
+                                    System.out.print(" > ");
+
+                                    break;
+                                }
+                                else if (!isChatting && socket != null) {
                                     out.writeUTF(serverOutput[0] + "#100");
                                     out.flush();
                                     serverInput[0] = null;
@@ -79,7 +84,7 @@ public class RegistryConnection extends Thread {
                                 e.printStackTrace();
                             }
                         }
-                        break;
+                            break;
                     }
                 }
             });
@@ -93,18 +98,16 @@ public class RegistryConnection extends Thread {
                     while (true){
                         while (!isChatting && !socket.isClosed() ) {
                             try {
-                                serverInput[0] = serverIn.readUTF();
+                                serverInput[0] = serverIn.readUTF(); //TODO handle after connecting peer
+                                LOGGER.info("Got a message from registry => {}", serverInput[0]);
                                 if ("logout".equalsIgnoreCase(serverInput[0])){
-                                    serverIn.close();
                                     socket.close();
-                                    bufferedReader.close();
                                     break;
                                 }
                                 // break the string into message and recipient part
                                 st[0] = new StringTokenizer(serverInput[0], "#");
                                 msg[0] = st[0].nextToken();
                                 code[0] = st[0].nextToken();
-                                LOGGER.info("Got a message from registry => {}", serverInput[0]);
                                 System.out.println("Registry -> " + msg[0]);
                                 System.out.print("> ");
                             } catch (IOException e) {

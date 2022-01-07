@@ -13,14 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Registry implements PeerFinder {
-    private static Logger LOGGER = LoggerFactory.getLogger(Registry.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Registry.class);
 
     public static Map<String, UserHandler> userHandlerMap = new HashMap<>();
     public static Map<String, User> users = new HashMap<>();
     private static int numberOfUsers = 0;
-    private Socket socket;
-    private ServerSocket server;
-    private DataInputStream in;
     private ServerSocket multiThreadSocket;
 
     public void multiThreadedServer() throws IOException {
@@ -53,6 +50,14 @@ public class Registry implements PeerFinder {
                 LOGGER.error("IO error in newHandler socket", e);
             }
             UserHandler newUserHandler = new UserHandler(newRequestSocket, "client " + numberOfUsers, inputStream, dos);
+
+
+//            UserHandler newUserHandler_2 = UserHandler.builder()
+//                    .name("client " + numberOfUsers)
+//                    .dis(inputStream)
+//                    .dos(dos)
+//                    .socket(newRequestSocket).build();
+
 
             // Create a new Thread with this object.
             Thread t = new Thread(newUserHandler);

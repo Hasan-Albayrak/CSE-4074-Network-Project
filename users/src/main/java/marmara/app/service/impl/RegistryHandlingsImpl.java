@@ -15,7 +15,7 @@ import java.net.Socket;
 @AllArgsConstructor
 public class RegistryHandlingsImpl implements RegistryHandlings {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(RegistryHandlingsImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistryHandlingsImpl.class);
 
     private InputStreamReader inputStreamReader;
     private BufferedReader reader;
@@ -36,7 +36,10 @@ public class RegistryHandlingsImpl implements RegistryHandlings {
 
             int port = 8080;
 
+            LOGGER.info("Connecting Registry ...");
+            System.out.println("Connecting Registry ...");
             registryConnection.setSocket(new Socket(address, port));
+            LOGGER.info("Connected");
             System.out.println("Connected");
 
             // takes input from terminal
