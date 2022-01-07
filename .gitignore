@@ -2,3 +2,5 @@ registry/target
 users/target
 .idea
 .gitignore
+users/src/main/java/marmara/app/logs/logging.log
+registry/src/main/java/marmara/logs/logging.log

@@ -1,8 +1,7 @@
-package marmara.app.service.impl;
+package marmara.app.model;
 
 import lombok.Builder;
 import lombok.Data;
-import marmara.app.model.Peer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Data
 @Builder
 public class PeerHandler {
-    private static Logger LOGGER = LoggerFactory.getLogger(PeerHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeerHandler.class);
     public static Map<String, PeerHandler> peerHandlerMap = new HashMap<>();
 
 

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.*;
 
 public class UDPConnection implements Runnable {
-    private static Logger LOGGER = LoggerFactory.getLogger(UDPConnection.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UDPConnection.class);
 
 
     DatagramSocket datagramSocket;

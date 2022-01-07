@@ -1,7 +1,8 @@
 package marmara.app.model;
 
 import marmara.app.StartApp;
-import marmara.app.service.impl.PeerHandler;
+import marmara.app.service.RegistryHandlings;
+import marmara.app.service.impl.RegistryHandlingsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class ChatRequestHandler implements Runnable {
-    private static Logger LOGGER = LoggerFactory.getLogger(ChatRequestHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatRequestHandler.class);
 
 
     private static int numberOfPeers = 0;
@@ -56,13 +57,18 @@ public class ChatRequestHandler implements Runnable {
                 dos = new DataOutputStream(newRequestSocket.getOutputStream());
                 RegistryConnection.isChatting = true;
                 String userName = inputStream.readUTF();
+                System.out.println("Enter 'accept-peer' to handle connection request");
+                System.out.print(" > ");
+
                 System.out.println(userName + "wants to chat yes or no?");
+                System.out.print(" > ");
+
                 String yerOrNo = bufferedReader.readLine();
                 if ("yes".equalsIgnoreCase(yerOrNo)) {
                     dos.writeUTF("ACCEPT");
                     LOGGER.info("Creating a new handler for this peer ...");
                     Peer newPeer = Peer.builder().username(userName).build();
-                    PeerHandler newPeerHandler = PeerHandler.builder().peer(newPeer).dis(inputStream).dos(dos).scn(new Scanner(System.in)).name(userName).build();
+                    PeerHandler newPeerHandler = PeerHandler.builder().peer(newPeer).dis(inputStream).dos(dos).scn(new Scanner(System.in)).name(userName).socket(newRequestSocket).build();
                     PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
                     ClientThread clientThread = new ClientThread(newPeerHandler);
                     ServerThread serverThread = new ServerThread();
@@ -74,6 +80,9 @@ public class ChatRequestHandler implements Runnable {
 
                 } else {
                     dos.writeUTF("REJECT");
+                    RegistryConnection registryConnection = new RegistryConnection();
+                    RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
+                    registryHandlings.connectRegistry(registryConnection, StartApp.name, false);
                 }
 
                 LOGGER.info("Creating a new handler for this client ...");
