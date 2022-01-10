@@ -12,7 +12,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -28,7 +27,8 @@ public class ConnectPeerImpl implements ConnectPeer {
 
     public void initiate() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Enter peer portNumber and userName like portNumber-userName\n > ");
+        System.out.println("Enter peer portNumber and userName like portNumber-userName ");
+        System.out.print(" > ");
 
         try {
             while (reader.ready()) {
@@ -46,14 +46,12 @@ public class ConnectPeerImpl implements ConnectPeer {
             LOGGER.error("Error in reading peer port number and name ", e);
         }
         StringTokenizer st = new StringTokenizer(portNumberUsername, "-");
-        connect("local", Integer.parseInt(st.nextToken()), null, st.nextToken());
+        connect(Integer.parseInt(st.nextToken()), st.nextToken());
 
     }
 
 
-    public void connect(String ipAddresss, int portNumber, ServerSocket chatTCPSocket, String userName) {
-
-        Socket newRequestSocket = null;
+    public void connect(int portNumber, String userName) {
 
         DataInputStream inputStream = null;
         DataOutputStream dos = null;
@@ -84,6 +82,53 @@ public class ConnectPeerImpl implements ConnectPeer {
                 myScheduler.execute(clientThread);
                 myScheduler.execute(serverThread);
             }else {
+                RegistryConnection.isChatting = false;
+                System.out.println("Peer refused connection");
+                LOGGER.info("Peer refused connection");
+                RegistryConnection registryConnection = new RegistryConnection();
+                RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
+                registryHandlings.connectRegistry(registryConnection, StartApp.name, false);
+            }
+
+
+        } catch (Exception e) {
+            LOGGER.error("Error in initiating peer connection", e);
+        }
+
+
+    }
+
+    public void connect(String ipAddresss, int portNumber, String userName) {
+
+        DataInputStream inputStream = null;
+        DataOutputStream dos = null;
+        Peer peerToConnect = Peer.builder().username(userName).portNumber(String.valueOf(portNumber)).build();
+        Socket socket = null;
+
+        try {
+            socket = new Socket(ipAddresss, portNumber);
+            System.out.println("Connected peer, Awaiting response ...");
+
+
+            inputStream = new DataInputStream(socket.getInputStream());
+            dos = new DataOutputStream(socket.getOutputStream());
+            dos.writeUTF(StartApp.name + "#");
+            String yesOrNo = inputStream.readUTF();
+            if ("accept".equalsIgnoreCase(yesOrNo)) {
+                PeerHandler newPeerHandler = PeerHandler.builder()
+                        .peer(peerToConnect)
+                        .dis(inputStream)
+                        .dos(dos)
+                        .scn(new Scanner(System.in))
+                        .socket(socket)
+                        .name(userName)
+                        .build();
+                PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
+                ClientThread clientThread = new ClientThread(newPeerHandler);
+                ServerThread serverThread = new ServerThread();
+                myScheduler.execute(clientThread);
+                myScheduler.execute(serverThread);
+            } else {
                 RegistryConnection.isChatting = false;
                 System.out.println("Peer refused connection");
                 LOGGER.info("Peer refused connection");
