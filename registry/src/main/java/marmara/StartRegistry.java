@@ -23,7 +23,7 @@ public class StartRegistry {
         myScheduler.execute(checkOnline);
 
         TimeOutUser timeOutUser = new TimeOutUser();
-        ScheduledFuture<?> result = myScheduler.scheduleAtFixedRate(timeOutUser, 100, 100, TimeUnit.SECONDS);
+        ScheduledFuture<?> result = myScheduler.scheduleAtFixedRate(timeOutUser, 1, 5, TimeUnit.SECONDS);
         registry.multiThreadedServer();
 
     }

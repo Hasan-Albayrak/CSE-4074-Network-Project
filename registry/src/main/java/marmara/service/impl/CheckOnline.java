@@ -39,7 +39,7 @@ public class CheckOnline implements Runnable {
                 String userName = st.nextToken();
                 updateStatus(userName);
                 // System.out.println(parsedPacket);
-                LOGGER.info("Parsed packet => {}", parsedPacket);
+               // LOGGER.info("Parsed packet => {}", parsedPacket);
                 LOGGER.info("Parsed message => {} {}", msg, userName);
 
             } catch (IOException e) {

@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class ChatRequestHandler implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatRequestHandler.class);
@@ -57,6 +58,8 @@ public class ChatRequestHandler implements Runnable {
                 dos = new DataOutputStream(newRequestSocket.getOutputStream());
                 RegistryConnection.isChatting = true;
                 String userName = inputStream.readUTF();
+                StringTokenizer st = new StringTokenizer(userName, "#");
+                userName = st.nextToken();
                 System.out.println("Enter 'accept-peer' to handle connection request");
                 System.out.print(" > ");
 

@@ -45,6 +45,7 @@ public class ClientThread implements Runnable {
                     String msgToRead = st.nextToken();
                     String peerName = st.nextToken();
                     if ("logout".equalsIgnoreCase(msgToRead)) {
+                        System.out.println(peerHandler.getName() + " logged out");
                         System.out.println("Peer logged out enter 'logout-safe' to safely logout.");
                         System.out.print(" > ");
                         isLast = false;
@@ -61,25 +62,6 @@ public class ClientThread implements Runnable {
                 } catch (IOException e) {
                     LOGGER.error("Error while reading message from a peer => ", e);
                 }
-
-                // read the message sent to this client
-//                PeerHandler.peerHandlerMap.forEach((s, peerHandler) -> {
-//                    if (Objects.nonNull(s) && Objects.nonNull(peerHandler)) {
-//
-//                        try {
-//                            String msg = peerHandler.getDis().readUTF();
-//                            LOGGER.info("Got a message from a peer => {}", msg);
-//                            StringTokenizer st = new StringTokenizer(msg, "#");
-//                            String msgToRead = st.nextToken();
-//                            String peerName = st.nextToken();
-//                            System.out.println(peerName + " > " + msgToRead);
-//
-//                        } catch (IOException e) {
-//                            LOGGER.error("Error while reading message from a peer => ", e);
-//                        }
-//                    }
-//                });
-
         }
 
         LOGGER.info("Closing client thread {} logged out", peerHandler.getName());
@@ -95,9 +77,6 @@ public class ClientThread implements Runnable {
             RegistryConnection registryConnection = new RegistryConnection();
             RegistryHandlings registryHandlings = new RegistryHandlingsImpl();
             registryHandlings.connectRegistry(registryConnection, StartApp.name, false);
-        } else {
-            System.out.println(peerHandler.getName() + " logged out");
-
         }
     }
 }
