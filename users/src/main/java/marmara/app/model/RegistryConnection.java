@@ -92,6 +92,7 @@ public class RegistryConnection extends Thread {
                         break;
                     }
                     if ("timeout".equalsIgnoreCase(serverInput[0])) {
+                        System.out.println("You have timed out");
                         System.exit(0);
                         socket.close();
                         break;
