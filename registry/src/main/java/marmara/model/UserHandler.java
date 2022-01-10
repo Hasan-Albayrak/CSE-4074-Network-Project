@@ -1,6 +1,5 @@
 package marmara.model;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -13,7 +12,6 @@ import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
-
 public class UserHandler implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserHandler.class);
@@ -101,6 +99,8 @@ public class UserHandler implements Runnable {
                 dos.flush();
                 LOGGER.info("new user account has been created => {}", user);
                 Registry.users.put(this.user.getUsername(),this.user);
+                Registry.userHandlerMap.remove(this.name);
+                Registry.userHandlerMap.put(this.user.getUsername(), this);
                 this.isOnline = true;
 
                 isUsernameValid = true;
@@ -136,7 +136,6 @@ public class UserHandler implements Runnable {
                 if (msgPart.equalsIgnoreCase("logout")) {
                     this.isOnline = false;
                     dos.writeUTF("logout");
-                  //  this.socket.close();
                     break;
                 }
                 switch (msgPart.split(" ")[0].toUpperCase()) {
@@ -164,7 +163,6 @@ public class UserHandler implements Runnable {
             // closing resources
             this.dis.close();
             this.dos.close();
-            // this.socket.close();
             LOGGER.info("Removing UserHandler => {}", this);
             if (Registry.userHandlerMap.remove(this.name, this)) {
                 LOGGER.info("Removed UserHandler => {}", this);

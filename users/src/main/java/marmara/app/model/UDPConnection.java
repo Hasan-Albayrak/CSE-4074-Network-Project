@@ -30,7 +30,7 @@ public class UDPConnection implements Runnable {
 
         while (true) {
             try {
-                Thread.sleep(60000);
+                Thread.sleep(6000);
                 datagramSocket.send(helloPacket);
             } catch (InterruptedException | IOException e) {
                 LOGGER.error("Error while sending udp to registry ", e);

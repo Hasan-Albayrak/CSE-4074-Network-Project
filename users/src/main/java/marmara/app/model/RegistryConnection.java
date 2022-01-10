@@ -48,78 +48,68 @@ public class RegistryConnection extends Thread {
         final String[] code = {"null"};
 
         // keep reading until "Logout" is input
-        if (true) {
-            // sendMessage thread
-            Thread sendMessage = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        while (!isChatting && socket != null && !socket.isClosed()){
 
-                            try {
-                              //  System.out.println("User 'connect-peer' command to connect peer");
+        // sendMessage thread
+        Thread sendMessage = new Thread(() -> {
+            while (!isChatting && socket != null && !socket.isClosed()) {
+                try {
+                    System.out.println("User 'connect-peer' command to connect peer");
 
-                                serverOutput[0] = bufferedReader.readLine();
-                                if ("connect-peer".equalsIgnoreCase(serverOutput[0])) {
-                                    isChatting = true;
-                                    out.writeUTF("logout#400");
-                                    out.flush();
-                                    connectPeer.initiate();
-                                    break;
-                                }
-                                else if ("accept-peer".equalsIgnoreCase(serverOutput[0])) {
-                                    isChatting = true;
-                                    out.writeUTF("logout#400");
-                                    out.flush();
-                                    System.out.print(" > ");
-
-                                    break;
-                                }
-                                else if (!isChatting && socket != null) {
-                                    out.writeUTF(serverOutput[0] + "#100");
-                                    out.flush();
-                                    serverInput[0] = null;
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                            break;
+                    serverOutput[0] = bufferedReader.readLine();
+                    if ("connect-peer".equalsIgnoreCase(serverOutput[0])) {
+                        isChatting = true;
+                        out.writeUTF("logout#400");
+                        out.flush();
+                        connectPeer.initiate();
+                        break;
+                    } else if ("accept-peer".equalsIgnoreCase(serverOutput[0])) {
+                        isChatting = true;
+                        out.writeUTF("logout#400");
+                        out.flush();
+                        System.out.print(" > ");
+                        break;
+                    } else if (!isChatting && socket != null) {
+                        out.writeUTF(serverOutput[0] + "#100");
+                        out.flush();
+                        serverInput[0] = null;
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            });
+            }
 
-            // readMessage thread
-            Thread readMessage = new Thread(new Runnable() {
-                @Override
-                public void run() {
+        });
 
-                    //TODO daha güzel text ui
-                    while (true){
-                        while (!isChatting && !socket.isClosed() ) {
-                            try {
-                                serverInput[0] = serverIn.readUTF(); //TODO handle after connecting peer
-                                LOGGER.info("Got a message from registry => {}", serverInput[0]);
-                                if ("logout".equalsIgnoreCase(serverInput[0])){
-                                    socket.close();
-                                    break;
-                                }
-                                // break the string into message and recipient part
-                                st[0] = new StringTokenizer(serverInput[0], "#");
-                                msg[0] = st[0].nextToken();
-                                code[0] = st[0].nextToken();
-                                System.out.println("Registry -> " + msg[0]);
-                                System.out.print("> ");
-                            } catch (IOException e) {
-                                LOGGER.error("Error in reading from registry socket", e);
-                            }
-                        }
+        // readMessage thread
+        Thread readMessage = new Thread(() -> {
+            //TODO daha güzel text ui
+            while (!isChatting && !socket.isClosed()) {
+                try {
+                    serverInput[0] = serverIn.readUTF();
+                    LOGGER.info("Got a message from registry => {}", serverInput[0]);
+                    if ("logout".equalsIgnoreCase(serverInput[0])) {
+                        socket.close();
                         break;
                     }
+                    if ("timeout".equalsIgnoreCase(serverInput[0])) {
+                        System.exit(0);
+                        socket.close();
+                        break;
+                    }
+                    // break the string into message and recipient part
+                    st[0] = new StringTokenizer(serverInput[0], "#");
+                    msg[0] = st[0].nextToken();
+                    code[0] = st[0].nextToken();
+                    System.out.println("Registry -> " + msg[0]);
+                    System.out.print("> ");
+                } catch (IOException e) {
+                    LOGGER.error("Error in reading from registry socket", e);
                 }
-            });
-            sendMessage.start();
-            readMessage.start();
-        }
+            }
+
+        });
+        sendMessage.start();
+        readMessage.start();
     }
+
 }
