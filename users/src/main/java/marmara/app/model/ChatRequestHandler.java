@@ -23,10 +23,10 @@ public class ChatRequestHandler implements Runnable {
     private ServerSocket multiThreadSocket;
 
 
-
     @Override
     public void run() {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+
 
         isChatting = false;
         // server is listening on port 8080
@@ -79,7 +79,20 @@ public class ChatRequestHandler implements Runnable {
                     Thread tServer = new Thread(serverThread);
                     tServer.start();
                     tClient.start();
-                    isChatting = true;
+                    LOGGER.info("Creating a new handler for this client ...");
+
+
+                }else  if ("yes-chat".equalsIgnoreCase(yerOrNo)) {
+                    dos.writeUTF("ACCEPT");
+                    LOGGER.info("Creating a new handler for this peer ...");
+                    Peer newPeer = Peer.builder().username(userName).build();
+                    PeerHandler newPeerHandler = PeerHandler.builder().peer(newPeer).dis(inputStream).dos(dos).scn(new Scanner(System.in)).name(userName).socket(newRequestSocket).build();
+                    PeerHandler.peerHandlerMap.put(userName, newPeerHandler);
+                    ClientThread clientThread = new ClientThread(newPeerHandler);
+                    Thread tClient = new Thread(clientThread);
+                    tClient.start();
+
+                    LOGGER.info("Creating a new handler for this client ...");
 
                 } else {
                     dos.writeUTF("REJECT");
@@ -88,7 +101,6 @@ public class ChatRequestHandler implements Runnable {
                     registryHandlings.connectRegistry(registryConnection, StartApp.name, false);
                 }
 
-                LOGGER.info("Creating a new handler for this client ...");
 
             } catch (IOException e) {
                 LOGGER.error("IO error in newHandler socket", e);
@@ -97,4 +109,5 @@ public class ChatRequestHandler implements Runnable {
 
         }
     }
+
 }
