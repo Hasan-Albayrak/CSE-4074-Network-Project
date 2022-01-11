@@ -1,7 +1,10 @@
 package marmara.app.model;
 
 import marmara.app.StartApp;
+import marmara.app.service.ConnectPeer;
 import marmara.app.service.RegistryHandlings;
+import marmara.app.service.impl.ConnectPeerImpl;
+import marmara.app.service.impl.CustomThreadScheduler;
 import marmara.app.service.impl.RegistryHandlingsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,7 @@ public class ServerThread implements Runnable {
     private boolean workFlag;
     public static boolean peerLoggedOut;
     private boolean isLast;
+    private ConnectPeer connectPeer;
 
     public void stopThread() {
         workFlag = false;
@@ -32,7 +36,7 @@ public class ServerThread implements Runnable {
         reader = new BufferedReader(new InputStreamReader(System.in));
         workFlag = true;
         peerLoggedOut = false;
-
+        connectPeer = new ConnectPeerImpl(new CustomThreadScheduler(5));
         while (!peerLoggedOut) {
             if (workFlag) {
                 try {
@@ -70,7 +74,9 @@ public class ServerThread implements Runnable {
                             }
                         });
                         break;
-                    } else {
+                    } else  if ("connect-peer".equalsIgnoreCase(msg)) {
+                        connectPeer.initiate();
+                    }else {
 
                         msg += "#" + StartApp.name;
                         String finalMsg = msg;
